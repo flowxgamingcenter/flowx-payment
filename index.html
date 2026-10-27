@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#171321">
+<title>FLOWX | Payment</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: radial-gradient(ellipse at top, #392044, #171321 65%);
+  color: #fff;
+  font-family: Arial, sans-serif;
+}
+.container {
+  width: 100%;
+  max-width: 420px;
+  padding: 28px 23px;
+  border: 1px solid #59405e;
+  border-radius: 22px;
+  background: linear-gradient(145deg,#251d30,#171521);
+  box-shadow: 0 15px 50px #0008;
+}
+.brand {
+  text-align: center;
+  margin-bottom: 26px;
+}
+.logo {
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: 3px;
+}
+.logo span { color: #d65a48; }
+.tagline {
+  color: #bca9c5;
+  font-size: 11px;
+  letter-spacing: 3px;
+  margin-top: 6px;
+}
+h2 {
+  font-size: 19px;
+  margin: 0 0 20px;
+}
+.label {
+  color: #bdaec5;
+  font-size: 12px;
+  margin-bottom: 7px;
+}
+.value {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 19px;
+}
+.account {
+  padding: 19px;
+  border-radius: 15px;
+  background: #32263d;
+  border: 1px solid #72536e;
+  margin: 20px 0;
+}
+.number {
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #f1cf83;
+  text-align: center;
+  margin: 12px 0 17px;
+}
+button {
+  width: 100%;
+  padding: 14px;
+  border: 0;
+  border-radius: 11px;
+  background: linear-gradient(100deg,#b94e55,#8051a7);
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+button:active { transform: scale(.98); }
+.notice {
+  padding: 13px;
+  border-radius: 10px;
+  background: #42272d;
+  color: #ffc7bd;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.footer {
+  text-align: center;
+  color: #aa99b1;
+  font-size: 11px;
+  margin-top: 24px;
+  letter-spacing: 1px;
+}
+#toast {
+  display: none;
+  text-align: center;
+  margin-top: 12px;
+  color: #f1cf83;
+  font-size: 13px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="brand">
+    <div class="logo">FLOW<span>X</span></div>
+    <div class="tagline">GAMING CENTER</div>
+  </div>
+
+  <h2>💳 Payment Information</h2>
+
+  <div class="label">BANK / ธนาคาร</div>
+  <div class="value">KBANK — กสิกรไทย</div>
+
+  <div class="label">ACCOUNT NAME / ชื่อบัญชี</div>
+  <div class="value">
+    นายทศพล ปวงแก้ว<br>
+    THOTSAPHON PAUNGKAEO
+  </div>
+
+  <div class="account">
+    <div class="label">ACCOUNT NUMBER / เลขบัญชี</div>
+    <div class="number" id="account">241-1-80708-0</div>
+    <button onclick="copyAccount()">
+      📋 COPY ACCOUNT NUMBER
+    </button>
+    <div id="toast">✓ คัดลอกเลขบัญชีเรียบร้อยแล้ว</div>
+  </div>
+
+  <div class="notice">
+    ⚠️ กรุณาตรวจสอบชื่อบัญชีและเลขบัญชีให้ถูกต้องก่อนโอนเงินทุกครั้ง
+    <br>
+    หากโอนเรียบร้อยแล้ว กรุณาส่งสลิปให้แอดมินเพื่อยืนยันการชำระเงิน
+  </div>
+
+  <div class="footer">
+    FLOWX — POWER UP YOUR PLAY.
+  </div>
+
+</div>
+
+<script>
+async function copyAccount() {
+  const number = "241-1-80708-0";
+
+  try {
+    await navigator.clipboard.writeText(number);
+  } catch (error) {
+    const input = document.createElement("textarea");
+    input.value = number;
+    input.style.position = "fixed";
+    input.style.opacity = "0";
+    document.body.appendChild(input);
+    input.select();
+    const copied = document.execCommand("copy");
+    input.remove();
+
+    if (!copied) {
+      alert("ไม่สามารถคัดลอกได้ กรุณาคัดลอกเลขบัญชีด้วยตนเอง");
+      return;
+    }
+  }
+
+  const toast = document.getElementById("toast");
+  toast.style.display = "block";
+  setTimeout(() => {
+    toast.style.display = "none";
+  }, 2500);
+}
+</script>
+</body>
+</html>
