@@ -1,289 +1,393 @@
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FLOWX REVIEW CENTER | STAY ON FLOW</title>
-<meta name="theme-color" content="#10152d">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FLOWX | REVIEW CENTER</title>
+<meta name="theme-color" content="#07132e">
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
+
 <style>
-:root {
-  --bg:#0c1022;
-  --panel:#151c38;
-  --blue:#477bff;
-  --cyan:#69e4ff;
-  --pink:#ff83c5;
-  --purple:#9e83ff;
-  --cream:#fff5f7;
-  --muted:#aab5d5;
+:root{
+ --bg:#061126;--panel:#101f40;--blue:#147bff;
+ --cyan:#6ce8ff;--pink:#ff79bd;--gold:#ffc95c;
+ --ink:#142044;--muted:#a9bbdc;
 }
 *{box-sizing:border-box}
+html{scroll-behavior:smooth}
 body{
-  margin:0;background:var(--bg);color:white;
-  font-family:'Kanit',sans-serif;
-  background-image:
-    radial-gradient(ellipse at 15% 10%,#253d793d,transparent 40%),
-    radial-gradient(ellipse at 90% 35%,#873d8c25,transparent 35%);
+ margin:0;color:white;font-family:Kanit,sans-serif;
+ background:
+ radial-gradient(ellipse at 15% 15%,#1266b044,transparent 38%),
+ radial-gradient(ellipse at 90% 35%,#a02c8040,transparent 35%),
+ linear-gradient(145deg,#030a19,#081b3c 55%,#030a19);
 }
 button,input,select,textarea{font:inherit}
 button{cursor:pointer}
-a{color:inherit;text-decoration:none}
-.container{width:min(1120px,92%);margin:auto}
+a{text-decoration:none;color:inherit}
+.container{width:min(1440px,94%);margin:auto}
+
+/* NAVIGATION */
 nav{
-  padding:18px 0;border-bottom:1px solid #ffffff18;
-  background:#0c1022dc;position:sticky;top:0;z-index:10;
-  backdrop-filter:blur(15px)
+ position:sticky;top:0;z-index:20;
+ background:#050d20ed;backdrop-filter:blur(15px);
+ border-bottom:1px solid #55caff55;
 }
-.navinner{display:flex;justify-content:space-between;align-items:center}
-.logo{font-family:Orbitron,sans-serif;font-size:22px;font-weight:900;letter-spacing:2px}
+.navinner{
+ min-height:66px;display:flex;align-items:center;
+ justify-content:space-between;gap:15px;
+}
+.logo{font:900 27px Orbitron,sans-serif;letter-spacing:1px}
 .logo span{color:var(--pink)}
-.navtag{color:var(--cyan);font-size:12px;letter-spacing:2px}
-.hero{padding:65px 0 40px;position:relative;overflow:hidden}
+.navlinks{display:flex;gap:9px}
+.navlinks a{
+ padding:10px 20px;border-radius:30px;
+ color:#dceaff;font-size:14px;
+}
+.navlinks a:hover,.navlinks a.active{
+ background:linear-gradient(100deg,#ff78bd,#ffa0d2);
+ color:#21132d;
+}
+
+/* HERO */
+.hero{
+ position:relative;overflow:hidden;
+ min-height:360px;padding:55px 0 38px;
+ background:
+ radial-gradient(ellipse at 15% 70%,#087bff88,transparent 35%),
+ radial-gradient(ellipse at 85% 20%,#e83b9c66,transparent 32%),
+ linear-gradient(120deg,#07132b,#0d3470 48%,#07132b);
+ border-bottom:3px solid #4acfff;
+}
 .hero:before{
-  content:"";position:absolute;width:390px;height:390px;
-  border:1px solid #5d8dff35;border-radius:50%;
-  right:-100px;top:-120px;box-shadow:0 0 80px #397aff22
+ content:"";position:absolute;inset:0;
+ background:repeating-linear-gradient(130deg,
+ transparent 0 35px,#ffffff08 36px 38px);
+ pointer-events:none;
 }
-.eyebrow{color:var(--cyan);font-family:Orbitron,sans-serif;font-size:11px;letter-spacing:4px}
+.hero:after{
+ content:"⚽";position:absolute;right:5%;bottom:-55px;
+ font-size:250px;opacity:.09;transform:rotate(-20deg);
+}
+.heroContent{position:relative;z-index:1;text-align:center}
+.eyebrow{
+ color:var(--cyan);font:700 12px Orbitron,sans-serif;
+ letter-spacing:5px;
+}
 .hero h1{
-  font-family:Orbitron,sans-serif;
-  font-size:clamp(34px,7vw,72px);line-height:1.12;
-  margin:18px 0;letter-spacing:-2px
+ margin:15px 0 5px;font:900 clamp(40px,8vw,88px)/1.05 Orbitron,sans-serif;
+ text-shadow:0 0 30px #168bff88;
 }
-.hero h1 span{
-  color:transparent;-webkit-text-stroke:1px var(--cyan);
-}
-.hero p{color:var(--muted);max-width:580px;line-height:1.9}
-.heroactions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.hero h1 span{color:var(--pink)}
+.hero h2{font-size:clamp(20px,3vw,34px);margin:0}
+.hero p{color:#d4e4ff;line-height:1.8;max-width:600px;margin:15px auto}
+.heroButtons{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:23px}
 .btn{
-  border:0;border-radius:13px;padding:12px 22px;
-  font-weight:600;transition:.2s
+ display:inline-flex;align-items:center;justify-content:center;
+ gap:8px;border:0;border-radius:30px;
+ padding:12px 24px;font-weight:700;transition:.2s;
 }
-.btn:hover{transform:translateY(-2px);filter:brightness(1.12)}
-.primary{background:linear-gradient(110deg,#477bff,#9c71ff);color:white;box-shadow:0 8px 25px #477bff40}
-.secondary{background:#ffffff0c;border:1px solid #ffffff30;color:white}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:25px 0 45px}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.1)}
+.primary{
+ color:#21132d;background:linear-gradient(100deg,#ff78bd,#ffa1d1);
+ box-shadow:0 7px 24px #ff78bd55;
+}
+.secondary{background:#0b1b37;border:1px solid #62dfff;color:white}
+
+/* STATS */
+.stats{
+ display:grid;grid-template-columns:repeat(3,1fr);
+ gap:13px;margin:20px 0 28px;
+}
 .stat{
-  padding:20px;border:1px solid #ffffff17;border-radius:18px;
-  background:linear-gradient(145deg,#1a2548,#12182f)
+ display:flex;align-items:center;gap:14px;
+ padding:17px 20px;border:1px solid #55bfff66;
+ border-radius:16px;background:linear-gradient(120deg,#10264b,#09172e);
+ box-shadow:inset 3px 0 #27bfff;
 }
-.stat small{color:var(--muted)}
-.stat strong{display:block;font-family:Orbitron,sans-serif;font-size:27px;margin-top:5px}
-.stat .stars{color:#ffd76a;letter-spacing:3px}
-.sectionhead{display:flex;justify-content:space-between;align-items:end;gap:15px;flex-wrap:wrap;margin:35px 0 18px}
-.sectionhead h2{font-size:27px;margin:0}
-.sectionhead p{color:var(--muted);margin:4px 0}
-.filters{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:20px}
+.statIcon{font-size:29px;color:var(--pink)}
+.stat small{display:block;color:#a9c3e8;font-size:12px}
+.stat strong{font:800 26px Orbitron,sans-serif}
+
+/* MAIN LAYOUT */
+.content{
+ display:grid;grid-template-columns:minmax(0,1fr) 350px;
+ gap:22px;align-items:start;padding-bottom:45px;
+}
+.sectionhead{
+ display:flex;justify-content:space-between;
+ align-items:end;flex-wrap:wrap;gap:10px;margin:10px 0 17px;
+}
+.sectionhead h2{font-size:30px;margin:0}
+.sectionhead h2 span{color:var(--pink)}
+.sectionhead p{color:var(--muted);margin:3px 0;font-size:13px}
+.filters{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:15px}
 .filters select,.filters input{
-  background:#171f3b;border:1px solid #ffffff25;color:white;
-  border-radius:11px;padding:10px 13px;outline:none;min-width:160px
+ background:#f5f7ff;color:#182348;
+ border:1px solid #ccd9ef;border-radius:25px;
+ padding:10px 14px;outline:none;
 }
-.filters input{flex:1;min-width:200px}
-.filters option{background:#171f3b}
-.reviewgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}
+.filters input{flex:1;min-width:170px}
+.reviewgrid{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;
+}
 .review{
-  background:linear-gradient(145deg,#fff8fc,#f0edff);
-  color:#262846;border-radius:19px;padding:20px;
-  box-shadow:0 8px 25px #0002;position:relative;overflow:hidden
+ overflow:hidden;border-radius:16px;
+ background:linear-gradient(145deg,#fff,#e9efff);
+ color:var(--ink);border:2px solid #d5e8ff;
+ box-shadow:0 8px 22px #0005;
 }
-.review:after{
-  content:"✦";position:absolute;right:15px;top:8px;
-  color:#e3c6ff;font-size:32px
+.reviewBanner{
+ height:76px;padding:12px 15px;
+ display:flex;align-items:center;justify-content:space-between;
+ color:white;font-weight:800;font-size:19px;
+ background:
+ radial-gradient(circle at 80% 30%,#ff70b977,transparent 35%),
+ linear-gradient(110deg,#061b43,#1267b5,#101b43);
 }
-.reviewtop{display:flex;justify-content:space-between;gap:10px;align-items:center}
-.reviewname{font-weight:700;font-size:17px}
-.gamepill{
-  background:#e5eaff;color:#4056a3;padding:4px 10px;
-  border-radius:30px;font-size:12px;font-weight:600
+.reviewBanner small{display:block;font-size:10px;color:#b5e9ff;letter-spacing:2px}
+.reviewBody{padding:11px 13px 13px}
+.reviewTop{display:flex;justify-content:space-between;gap:6px;align-items:center}
+.reviewName{font-weight:700;overflow-wrap:anywhere}
+.gamePill{
+ background:#e4edff;color:#16558c;
+ padding:3px 9px;border-radius:20px;font-size:11px;white-space:nowrap;
 }
-.reviewstars{color:#f2ad32;letter-spacing:2px;margin:10px 0}
-.reviewtext{line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere}
-.reviewdate{font-size:11px;color:#85859b;margin-top:15px}
+.reviewStars{color:#ffc34d;font-size:19px;letter-spacing:1px;margin:5px 0}
+.reviewText{
+ font-size:13px;line-height:1.6;min-height:60px;
+ white-space:pre-wrap;overflow-wrap:anywhere;
+}
+.reviewDate{
+ display:flex;justify-content:space-between;
+ color:#8795b2;font-size:11px;margin-top:9px;
+}
 .empty{
-  grid-column:1/-1;text-align:center;padding:45px 15px;
-  border:1px dashed #ffffff35;border-radius:18px;color:var(--muted)
+ grid-column:1/-1;text-align:center;padding:40px 15px;
+ border:1px dashed #6edfff88;border-radius:17px;
+ color:#b9cce9;background:#0b1b38aa;
 }
+
+/* WRITE REVIEW */
 .formpanel{
-  margin:55px 0;padding:25px;
-  background:linear-gradient(145deg,#1a2548,#17152f);
-  border:1px solid #ffffff22;border-radius:23px;
-  box-shadow:0 15px 45px #0003
+ position:sticky;top:82px;padding:20px;
+ background:linear-gradient(150deg,#fff,#e9efff);
+ color:#152143;border:3px solid #d7eaff;
+ border-radius:22px;box-shadow:0 12px 35px #0006;
 }
-.formpanel h2{margin:0 0 5px}
-.formpanel>p{color:var(--muted);margin-top:0}
-.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.field{display:flex;flex-direction:column;gap:7px}
-.field.full{grid-column:1/-1}
-.field label{font-size:14px;color:#dbe4ff}
+.formBanner{
+ margin:-20px -20px 17px;padding:17px;
+ text-align:center;color:white;font-size:25px;font-weight:800;
+ background:linear-gradient(110deg,#071a3b,#1168ac);
+}
+.formBanner small{display:block;color:#ff9bd0;font-size:12px;letter-spacing:2px}
+.formpanel h2{font-size:23px;margin:0}
+.formpanel>p{color:#7785a4;font-size:13px;margin:4px 0 17px}
+.formgrid{display:grid;grid-template-columns:1fr;gap:12px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13px;font-weight:700}
 .field input,.field select,.field textarea{
-  width:100%;padding:12px 14px;border-radius:11px;
-  background:#0d142b;border:1px solid #ffffff25;
-  color:white;outline:none
+ width:100%;padding:11px 13px;border-radius:12px;
+ background:#f7f9ff;border:1px solid #ccd7ee;color:#172348;
+ outline:none;
 }
-.field textarea{min-height:115px;resize:vertical}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--cyan)}
-.field option{background:#151c38}
-.ratingpick{display:flex;gap:7px}
+.field textarea{min-height:110px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{
+ border-color:#268de8;box-shadow:0 0 0 3px #268de822;
+}
+.ratingpick{display:flex;gap:8px}
 .ratingpick button{
-  border:0;background:none;color:#626a85;font-size:30px;padding:0
+ border:0;background:none;color:#c5cede;
+ font-size:32px;padding:0;line-height:1;
 }
-.ratingpick button.active{color:#ffd15c}
-.formnote{font-size:12px;color:var(--muted);line-height:1.7;margin:13px 0}
-#status{margin-top:12px;font-size:14px}
-footer{border-top:1px solid #ffffff18;padding:30px 0;color:var(--muted);text-align:center;font-size:13px}
-footer strong{font-family:Orbitron,sans-serif;color:white}
-@media(max-width:650px){
-  .hero{padding-top:45px}
-  .stats{gap:8px}
-  .stat{padding:13px 10px}
-  .stat strong{font-size:20px}
-  .stat small{font-size:11px}
-  .reviewgrid{grid-template-columns:1fr}
-  .formgrid{grid-template-columns:1fr}
-  .field.full{grid-column:auto}
-  .formpanel{padding:19px}
+.ratingpick button.active{color:#ffc64f}
+.formnote{font-size:11px;color:#7886a3;line-height:1.6;margin:13px 0}
+#submitBtn{width:100%;font-size:17px}
+#submitBtn:disabled{opacity:.6;cursor:wait}
+#status{margin-top:11px;font-size:13px;color:#15548d;line-height:1.5}
+footer{
+ border-top:1px solid #2b6b9b;padding:22px 0;
+ color:#9bb6d8;text-align:center;font-size:12px;
+}
+footer strong{font-family:Orbitron,sans-serif;color:#75eaff}
+
+@media(max-width:1050px){
+ .content{grid-template-columns:minmax(0,1fr) 310px}
+ .reviewgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:760px){
+ .container{width:94%}
+ .content{grid-template-columns:1fr}
+ .formpanel{position:static;grid-row:1}
+ .reviewgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .hero{min-height:300px}
+ .stats{gap:7px}
+ .stat{padding:12px;gap:7px}
+ .stat strong{font-size:19px}
+ .stat small{font-size:10px}
+}
+@media(max-width:480px){
+ .reviewgrid{grid-template-columns:1fr}
+ .stats{grid-template-columns:1fr 1fr}
+ .stat:last-child{grid-column:1/-1}
+ .navlinks a{padding:8px 12px;font-size:12px}
+ .hero{padding:42px 0 30px}
 }
 </style>
 </head>
-<body>
 
+<body>
 <nav>
-  <div class="container navinner">
-    <div>
-      <div class="logo">FLOW<span>X</span></div>
-      <div class="navtag">REVIEW CENTER</div>
-    </div>
-    <a href="#write" class="btn secondary">✦ เขียนรีวิว</a>
+ <div class="container navinner">
+  <a href="#top" class="logo">FLOW<span>X</span></a>
+  <div class="navlinks">
+   <a class="active" href="#reviews">ดูรีวิว</a>
+   <a href="#write">เขียนรีวิว</a>
   </div>
+ </div>
 </nav>
 
+<header class="hero" id="top">
+ <div class="container heroContent">
+  <div class="eyebrow">⚽ BLUE LOCK · ON FLOW</div>
+  <h1>FLOW<span>X</span></h1>
+  <h2>REVIEW CENTER</h2>
+  <p>ทุกการเติมมีเรื่องราว ทุกรีวิวมีความหมาย<br>
+  แบ่งปันประสบการณ์ของคุณกับ FLOWX GAMING CENTER</p>
+  <div class="heroButtons">
+   <a class="btn secondary" href="#reviews">ดูรีวิวลูกค้า ↓</a>
+   <a class="btn primary" href="#write">✎ เขียนรีวิวของคุณ</a>
+  </div>
+ </div>
+</header>
+
 <main class="container">
-  <section class="hero">
-    <div class="eyebrow">⚽ THE WORLD OF GAMERS</div>
-    <h1>STAY ON<br><span>YOUR FLOW.</span></h1>
-    <p>
-      ทุกประสบการณ์มีเรื่องราว ทุกรีวิวมีความหมาย
-      มาร่วมแบ่งปันประสบการณ์การใช้บริการกับ FLOWX
-      และเป็นส่วนหนึ่งของคอมมูนิตี้เกมเมอร์ของเรา
-    </p>
-    <div class="heroactions">
-      <a href="#reviews" class="btn primary">ดูรีวิวจากผู้เล่น ↓</a>
-      <a href="#write" class="btn secondary">✦ แชร์ประสบการณ์</a>
-    </div>
-  </section>
+ <section class="stats">
+  <div class="stat">
+   <div class="statIcon">♛</div>
+   <div><small>AVERAGE RATING</small><strong id="average">—</strong></div>
+  </div>
+  <div class="stat">
+   <div class="statIcon">★</div>
+   <div><small>PLAYER RATING</small><strong>★★★★★</strong></div>
+  </div>
+  <div class="stat">
+   <div class="statIcon">▤</div>
+   <div><small>TOTAL REVIEWS</small><strong id="total">—</strong></div>
+  </div>
+ </section>
 
-  <section class="stats">
-    <div class="stat">
-      <small>AVERAGE RATING</small>
-      <strong id="average">—</strong>
-      <div class="stars">★★★★★</div>
-    </div>
-    <div class="stat">
-      <small>TOTAL REVIEWS</small>
-      <strong id="total">—</strong>
-      <small>PLAYER STORIES</small>
-    </div>
-    <div class="stat">
-      <small>OUR COMMUNITY</small>
-      <strong>FLOWX</strong>
-      <small>GAMING CENTER</small>
-    </div>
-  </section>
-
+ <div class="content">
   <section id="reviews">
-    <div class="sectionhead">
-      <div>
-        <h2>✦ PLAYER REVIEWS</h2>
-        <p>เสียงจากผู้เล่นจริง แบ่งปันประสบการณ์ของคุณ</p>
-      </div>
+   <div class="sectionhead">
+    <div>
+     <h2>รีวิวจากลูกค้า <span>♛</span></h2>
+     <p>CUSTOMER REVIEWS · REAL PLAYERS, SAME ON FLOW</p>
     </div>
+   </div>
 
-    <div class="filters">
-      <select id="gameFilter" aria-label="เลือกเกม">
-        <option value="">ทุกเกม</option>
-        <option>RoV</option>
-        <option>Free Fire</option>
-        <option>Mobile Legends</option>
-        <option>PUBG Mobile</option>
-        <option>Roblox</option>
-        <option>Heartopia</option>
-        <option>VALORANT</option>
-        <option>Other</option>
+   <div class="filters">
+    <select id="gameFilter" aria-label="กรองตามเกม">
+     <option value="">ทุกเกม</option>
+     <option>RoV</option>
+     <option>Free Fire</option>
+     <option>Mobile Legends</option>
+     <option>PUBG Mobile</option>
+     <option>Roblox</option>
+     <option>Heartopia</option>
+     <option>VALORANT</option>
+     <option>Other</option>
+    </select>
+    <input id="search" type="search" placeholder="⌕ ค้นหารีวิว...">
+    <select id="sortReviews" aria-label="เรียงรีวิว">
+     <option value="newest">ล่าสุด</option>
+     <option value="oldest">เก่าสุด</option>
+     <option value="highest">คะแนนสูงสุด</option>
+    </select>
+   </div>
+
+   <div class="reviewgrid" id="reviewList">
+    <div class="empty">กำลังโหลดรีวิว...</div>
+   </div>
+  </section>
+
+  <aside class="formpanel" id="write">
+   <div class="formBanner">✦ เขียนรีวิว <small>WRITE A REVIEW</small></div>
+   <h2>แบ่งปันประสบการณ์</h2>
+   <p>รีวิวของคุณช่วยให้เกมเมอร์คนอื่นตัดสินใจได้ง่ายขึ้น</p>
+
+   <form id="reviewForm">
+    <div class="formgrid">
+     <div class="field">
+      <label for="game">เกมที่ใช้บริการ *</label>
+      <select id="game" required>
+       <option value="">เลือกเกม</option>
+       <option>RoV</option>
+       <option>Free Fire</option>
+       <option>Mobile Legends</option>
+       <option>PUBG Mobile</option>
+       <option>Roblox</option>
+       <option>Heartopia</option>
+       <option>VALORANT</option>
+       <option>Other</option>
       </select>
-      <input id="search" type="search" placeholder="ค้นหารีวิวหรือชื่อผู้เล่น...">
-    </div>
-    <div class="reviewgrid" id="reviewList">
-      <div class="empty">กำลังโหลดรีวิว...</div>
-    </div>
-  </section>
+     </div>
 
-  <section class="formpanel" id="write">
-    <h2>💗 SHARE YOUR FLOW</h2>
-    <p>มาเล่าประสบการณ์ของคุณให้ผู้เล่นคนอื่นฟังกัน!</p>
-
-    <form id="reviewForm">
-      <div class="formgrid">
-        <div class="field">
-          <label for="displayName">ชื่อที่ต้องการแสดง *</label>
-          <input id="displayName" maxlength="40" required placeholder="ชื่อเล่นหรือฉายา">
-        </div>
-        <div class="field">
-          <label for="game">เกมที่ใช้บริการ *</label>
-          <select id="game" required>
-            <option value="">เลือกเกม</option>
-            <option>RoV</option>
-            <option>Free Fire</option>
-            <option>Mobile Legends</option>
-            <option>PUBG Mobile</option>
-            <option>Roblox</option>
-            <option>Heartopia</option>
-            <option>VALORANT</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <div class="field full">
-          <label>ให้คะแนนบริการ *</label>
-          <div class="ratingpick" id="ratingPick" aria-label="คะแนนดาว">
-            <button type="button" data-rating="1" aria-label="1 ดาว">★</button>
-            <button type="button" data-rating="2" aria-label="2 ดาว">★</button>
-            <button type="button" data-rating="3" aria-label="3 ดาว">★</button>
-            <button type="button" data-rating="4" aria-label="4 ดาว">★</button>
-            <button type="button" data-rating="5" aria-label="5 ดาว">★</button>
-          </div>
-        </div>
-        <div class="field full">
-          <label for="reviewText">ข้อความรีวิว *</label>
-          <textarea id="reviewText" minlength="5" maxlength="1000" required
-            placeholder="แบ่งปันประสบการณ์ของคุณกับ FLOWX..."></textarea>
-        </div>
+     <div class="field">
+      <label>คะแนนความพึงพอใจ *</label>
+      <div class="ratingpick" id="ratingPick">
+       <button type="button" data-rating="1">★</button>
+       <button type="button" data-rating="2">★</button>
+       <button type="button" data-rating="3">★</button>
+       <button type="button" data-rating="4">★</button>
+       <button type="button" data-rating="5">★</button>
       </div>
-      <p class="formnote">
-        กรุณาเขียนรีวิวตามประสบการณ์จริง ห้ามใส่รหัสผ่าน ข้อมูลบัญชี
-        หรือข้อมูลส่วนตัวที่ละเอียดอ่อน รีวิวที่ส่งจะปรากฏบนเว็บไซต์สาธารณะ
-      </p>
-      <button class="btn primary" id="submitBtn" type="submit">ส่งรีวิวของฉัน ✦</button>
-      <div id="status" role="status" aria-live="polite"></div>
-    </form>
-  </section>
+     </div>
+
+     <div class="field">
+      <label for="reviewText">ข้อความรีวิว *</label>
+      <textarea id="reviewText" minlength="5" maxlength="1000"
+       required placeholder="เล่าประสบการณ์การใช้บริการของคุณ..."></textarea>
+     </div>
+
+     <div class="field">
+      <label for="displayName">ชื่อที่แสดง *</label>
+      <input id="displayName" maxlength="40" required
+       placeholder="ชื่อเล่นของคุณ">
+     </div>
+    </div>
+
+    <p class="formnote">
+     กรุณาเขียนรีวิวตามประสบการณ์จริง
+     ห้ามใส่รหัสผ่านหรือข้อมูลบัญชีส่วนตัว
+     รีวิวที่ส่งจะปรากฏบนเว็บไซต์สาธารณะ
+    </p>
+
+    <button class="btn primary" id="submitBtn" type="submit">
+     ➤ ส่งรีวิว ♡
+    </button>
+    <div id="status" role="status" aria-live="polite"></div>
+   </form>
+  </aside>
+ </div>
 </main>
 
 <footer>
-  <div class="container">
-    <strong>FLOWX GAMING CENTER</strong><br>
-    STAY ON FLOW. PLAY YOUR GAME. ⚽
-  </div>
+ <div class="container">
+  <strong>FLOWX GAMING CENTER</strong><br>
+  STAY ON FLOW · PLAY YOUR GAME.
+ </div>
 </footer>
 
 <script>
-// ใส่ Project URL และ Publishable key ของโปรเจกต์ตัวเองตรงนี้
+/* SUPABASE CONFIG — ใช้โปรเจกต์เดิม */
 const SUPABASE_URL = "https://gtngdpenvgluhplxharp.supabase.co";
-const SUPABASE_KEY = "sb_publishable_r-r1G1EBpWCmhZHrS_ocXg__iQQAINV
-";
+const SUPABASE_KEY = "sb_publishable_r-r1G1EBpWCmhZHrS_ocXg__iQQAINV";
+
 const headers = {
-  apikey: SUPABASE_KEY,
-  Authorization: `Bearer ${SUPABASE_KEY}`,
-  "Content-Type": "application/json"
+ apikey: SUPABASE_KEY,
+ Authorization: `Bearer ${SUPABASE_KEY}`,
+ "Content-Type": "application/json"
 };
 
 let selectedRating = 0;
@@ -292,138 +396,178 @@ let allReviews = [];
 const list = document.getElementById("reviewList");
 const statusBox = document.getElementById("status");
 
-function safeText(value) {
-  return String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&":"&amp;", "<":"&lt;", ">":"&gt;",
-    '"':"&quot;", "'":"&#39;"
-  })[char]);
+function safeText(value){
+ return String(value ?? "").replace(/[&<>"']/g, c => ({
+  "&":"&amp;","<":"&lt;",">":"&gt;",
+  '"':"&quot;","'":"&#39;"
+ })[c]);
 }
 
-function dateLabel(value) {
-  return new Date(value).toLocaleDateString("th-TH", {
-    year:"numeric", month:"short", day:"numeric"
-  });
+function dateLabel(value){
+ const date = new Date(value);
+ if(Number.isNaN(date.getTime())) return "";
+ return date.toLocaleDateString("th-TH",{
+  year:"numeric",month:"short",day:"numeric"
+ });
 }
 
-function renderReviews() {
-  const game = document.getElementById("gameFilter").value;
-  const query = document.getElementById("search").value.trim().toLowerCase();
+function renderReviews(){
+ const game = document.getElementById("gameFilter").value;
+ const query = document.getElementById("search").value.trim().toLowerCase();
+ const sort = document.getElementById("sortReviews").value;
 
-  const filtered = allReviews.filter(review => {
-    const matchesGame = !game || review.game === game;
-    const matchesText =
-      !query ||
-      review.display_name.toLowerCase().includes(query) ||
-      review.review_text.toLowerCase().includes(query) ||
-      review.game.toLowerCase().includes(query);
-    return matchesGame && matchesText;
-  });
+ let filtered = allReviews.filter(review => {
+  const name = String(review.display_name || "").toLowerCase();
+  const text = String(review.review_text || "").toLowerCase();
+  const gameName = String(review.game || "").toLowerCase();
 
-  if (!filtered.length) {
-    list.innerHTML = '<div class="empty">ยังไม่พบรีวิวในหมวดนี้ ✦</div>';
-    return;
+  return (!game || review.game === game) &&
+   (!query || name.includes(query) || text.includes(query) || gameName.includes(query));
+ });
+
+ if(sort === "oldest"){
+  filtered.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+ }else if(sort === "highest"){
+  filtered.sort((a,b)=>Number(b.rating)-Number(a.rating));
+ }else{
+  filtered.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+ }
+
+ if(!filtered.length){
+  list.innerHTML='<div class="empty">ยังไม่มีรีวิวในหมวดนี้ ✦</div>';
+  return;
+ }
+
+ list.innerHTML = filtered.map(review => {
+  const rating = Math.max(0,Math.min(5,Number(review.rating)||0));
+  return `
+   <article class="review">
+    <div class="reviewBanner">
+     <div>${safeText(review.game)}
+      <small>FLOWX PLAYER REVIEW</small>
+     </div>
+     <span>⚽</span>
+    </div>
+    <div class="reviewBody">
+     <div class="reviewTop">
+      <div class="reviewName">${safeText(review.display_name)}</div>
+      <span class="gamePill">${safeText(review.game)}</span>
+     </div>
+     <div class="reviewStars">${"★".repeat(rating)}${"☆".repeat(5-rating)}</div>
+     <div class="reviewText">${safeText(review.review_text)}</div>
+     <div class="reviewDate">
+      <span>${dateLabel(review.created_at)}</span><span>♥</span>
+     </div>
+    </div>
+   </article>`;
+ }).join("");
+}
+
+async function loadReviews(){
+ list.innerHTML='<div class="empty">กำลังโหลดรีวิว...</div>';
+
+ try{
+  const response = await fetch(
+   `${SUPABASE_URL}/rest/v1/reviews?select=id,display_name,game,rating,review_text,created_at&order=created_at.desc&limit=200`,
+   {headers}
+  );
+
+  if(!response.ok){
+   const message = await response.text();
+   throw new Error(message);
   }
 
-  list.innerHTML = filtered.map(review => `
-    <article class="review">
-      <div class="reviewtop">
-        <div class="reviewname">${safeText(review.display_name)}</div>
-        <span class="gamepill">${safeText(review.game)}</span>
-      </div>
-      <div class="reviewstars" aria-label="${review.rating} จาก 5 ดาว">
-        ${"★".repeat(review.rating)}${"☆".repeat(5-review.rating)}
-      </div>
-      <div class="reviewtext">${safeText(review.review_text)}</div>
-      <div class="reviewdate">${dateLabel(review.created_at)}</div>
-    </article>
-  `).join("");
+  allReviews = await response.json();
+
+  const count = allReviews.length;
+  const average = count
+   ? (allReviews.reduce((sum,item)=>sum+Number(item.rating||0),0)/count).toFixed(1)
+   : "—";
+
+  document.getElementById("total").textContent = count;
+  document.getElementById("average").textContent = average;
+  renderReviews();
+
+ }catch(error){
+  console.error("Supabase load error:",error);
+  list.innerHTML='<div class="empty">โหลดรีวิวไม่สำเร็จ กรุณาตรวจสอบการเชื่อมต่อ Supabase</div>';
+ }
 }
 
-async function loadReviews() {
-  if (SUPABASE_URL.includes("ใส่_") || SUPABASE_KEY.includes("ใส่_")) {
-    list.innerHTML = '<div class="empty">กรุณาตั้งค่า Supabase URL และ Publishable key ก่อนเปิดใช้งาน</div>';
-    return;
-  }
+/* STAR RATING */
+document.getElementById("ratingPick").addEventListener("click",event=>{
+ const button = event.target.closest("button[data-rating]");
+ if(!button) return;
 
-  try {
-    const response = await fetch(
-      `${SUPABASE_URL}/rest/v1/reviews?select=id,display_name,game,rating,review_text,created_at&order=created_at.desc&limit=200`,
-      {headers}
-    );
-    if (!response.ok) throw new Error("โหลดรีวิวไม่สำเร็จ");
-    allReviews = await response.json();
+ selectedRating = Number(button.dataset.rating);
 
-    const count = allReviews.length;
-    const average = count
-      ? (allReviews.reduce((sum, item) => sum + item.rating, 0) / count).toFixed(1)
-      : "—";
-
-    document.getElementById("total").textContent = count;
-    document.getElementById("average").textContent = average;
-    renderReviews();
-  } catch (error) {
-    list.innerHTML = '<div class="empty">โหลดรีวิวไม่สำเร็จ กรุณาตรวจสอบการเชื่อมต่อ</div>';
-    console.error(error);
-  }
-}
-
-document.getElementById("ratingPick").addEventListener("click", event => {
-  const button = event.target.closest("button[data-rating]");
-  if (!button) return;
-  selectedRating = Number(button.dataset.rating);
-  document.querySelectorAll("#ratingPick button").forEach(star => {
-    star.classList.toggle("active", Number(star.dataset.rating) <= selectedRating);
-  });
+ document.querySelectorAll("#ratingPick button").forEach(star=>{
+  star.classList.toggle("active",Number(star.dataset.rating)<=selectedRating);
+ });
 });
 
-document.getElementById("gameFilter").addEventListener("change", renderReviews);
-document.getElementById("search").addEventListener("input", renderReviews);
+/* FILTERS */
+document.getElementById("gameFilter").addEventListener("change",renderReviews);
+document.getElementById("search").addEventListener("input",renderReviews);
+document.getElementById("sortReviews").addEventListener("change",renderReviews);
 
-document.getElementById("reviewForm").addEventListener("submit", async event => {
-  event.preventDefault();
+/* SUBMIT REVIEW */
+document.getElementById("reviewForm").addEventListener("submit",async event=>{
+ event.preventDefault();
 
-  if (selectedRating < 1 || selectedRating > 5) {
-    statusBox.textContent = "กรุณาเลือกคะแนนดาวก่อนส่งรีวิวนะ";
-    return;
+ const displayName = document.getElementById("displayName").value.trim();
+ const game = document.getElementById("game").value;
+ const reviewText = document.getElementById("reviewText").value.trim();
+
+ if(!displayName || !game || reviewText.length<5){
+  statusBox.textContent="กรุณากรอกข้อมูลให้ครบถ้วน";
+  return;
+ }
+
+ if(selectedRating<1 || selectedRating>5){
+  statusBox.textContent="กรุณาเลือกคะแนนดาวก่อนส่งรีวิว";
+  return;
+ }
+
+ const submitButton = document.getElementById("submitBtn");
+ submitButton.disabled = true;
+ statusBox.textContent="กำลังส่งรีวิว...";
+
+ const review = {
+  display_name:displayName,
+  game:game,
+  rating:selectedRating,
+  review_text:reviewText
+ };
+
+ try{
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/reviews`,{
+   method:"POST",
+   headers:{...headers,Prefer:"return=representation"},
+   body:JSON.stringify(review)
+  });
+
+  if(!response.ok){
+   const message = await response.text();
+   throw new Error(message);
   }
-  if (SUPABASE_URL.includes("ใส่_") || SUPABASE_KEY.includes("ใส่_")) {
-    statusBox.textContent = "ยังไม่ได้ตั้งค่าการเชื่อมต่อ Supabase";
-    return;
-  }
 
-  const submitButton = document.getElementById("submitBtn");
-  submitButton.disabled = true;
-  statusBox.textContent = "กำลังส่งรีวิว...";
+  document.getElementById("reviewForm").reset();
+  selectedRating = 0;
 
-  const review = {
-    display_name: document.getElementById("displayName").value.trim(),
-    game: document.getElementById("game").value,
-    rating: selectedRating,
-    review_text: document.getElementById("reviewText").value.trim()
-  };
+  document.querySelectorAll("#ratingPick button").forEach(star=>{
+   star.classList.remove("active");
+  });
 
-  try {
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/reviews`, {
-      method:"POST",
-      headers:{...headers, Prefer:"return=representation"},
-      body:JSON.stringify(review)
-    });
-    if (!response.ok) {
-      const error = await response.text();
-      throw new Error(error);
-    }
+  statusBox.textContent="ส่งรีวิวสำเร็จแล้ว ขอบคุณที่ร่วมแบ่งปันนะ! 💗";
+  await loadReviews();
 
-    statusBox.textContent = "ส่งรีวิวสำเร็จแล้ว ขอบคุณที่ร่วมแบ่งปันนะ! 💗";
-    event.target.reset();
-    selectedRating = 0;
-    document.querySelectorAll("#ratingPick button").forEach(star => star.classList.remove("active"));
-    await loadReviews();
-  } catch (error) {
-    console.error(error);
-    statusBox.textContent = "ส่งรีวิวไม่สำเร็จ กรุณาลองใหม่อีกครั้ง";
-  } finally {
-    submitButton.disabled = false;
-  }
+ }catch(error){
+  console.error("Supabase submit error:",error);
+  statusBox.textContent="ส่งรีวิวไม่สำเร็จ กรุณาลองใหม่อีกครั้ง";
+ }finally{
+  submitButton.disabled = false;
+ }
 });
 
 loadReviews();
