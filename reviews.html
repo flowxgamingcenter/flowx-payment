@@ -234,6 +234,7 @@ footer strong{font-family:Orbitron,sans-serif;color:#75eaff}
  .hero{padding:42px 0 30px}
 }
 </style>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 
 <body>
@@ -316,7 +317,12 @@ footer strong{font-family:Orbitron,sans-serif;color:#75eaff}
    <h2>แบ่งปันประสบการณ์</h2>
    <p>รีวิวของคุณช่วยให้เกมเมอร์คนอื่นตัดสินใจได้ง่ายขึ้น</p>
 
-   <form id="reviewForm">
+   <div class="lineLoginBox">
+  <button type="button" id="lineLoginBtn">
+    เข้าสู่ระบบด้วย LINE
+  </button>
+  <p id="lineLoginStatus">กรุณาเข้าสู่ระบบ LINE ก่อนเขียนรีวิว</p>
+</div><form id="reviewForm">
     <div class="formgrid">
      <div class="field">
       <label for="game">เกมที่ใช้บริการ *</label>
@@ -357,19 +363,14 @@ footer strong{font-family:Orbitron,sans-serif;color:#75eaff}
      </div>
     </div>
 
-    <p class="formnote">
-     กรุณาเขียนรีวิวตามประสบการณ์จริง
-     ห้ามใส่รหัสผ่านหรือข้อมูลบัญชีส่วนตัว
-     รีวิวที่ส่งจะปรากฏบนเว็บไซต์สาธารณะ
-    </p>
-
-    <button class="btn primary" id="submitBtn" type="submit">
-     ➤ ส่งรีวิว ♡
-    </button>
-    <div id="status" role="status" aria-live="polite"></div>
-   </form>
-  </aside>
- </div>
+  <p class="formnote">
+  กรุณาเขียนรีวิวตามประสบการณ์จริง
+  ห้ามใส่รหัสผ่านหรือข้อมูลบัญชีส่วนตัว
+  รีวิวที่ส่งจะปรากฏบนเว็บไซต์สาธารณะ
+  </p>
+</form>
+</aside>
+</div>
 </main>
 
 <footer>
@@ -383,6 +384,7 @@ footer strong{font-family:Orbitron,sans-serif;color:#75eaff}
 /* SUPABASE CONFIG — ใช้โปรเจกต์เดิม */
 const SUPABASE_URL = "https://gtngdpenvgluhplxharp.supabase.co";
 const SUPABASE_KEY = "sb_publishable_r-r1G1EBpWCmhZHrS_ocXg__iQQAINV";
+const LIFF_ID = "2012241805-M9DSyAj1";
 
 const headers = {
  apikey: SUPABASE_KEY,
@@ -395,6 +397,70 @@ let allReviews = [];
 
 const list = document.getElementById("reviewList");
 const statusBox = document.getElementById("status");
+let verifiedLineUser = null;
+
+async function verifyLineLogin() {
+  const button = document.getElementById("lineLoginBtn");
+  const status = document.getElementById("lineLoginStatus");
+
+  try {
+    status.textContent = "กำลังตรวจสอบบัญชี LINE...";
+
+    const idToken = liff.getIDToken();
+
+    if (!idToken) {
+      throw new Error("ไม่พบ LINE ID Token");
+    }
+
+    const response = await fetch(
+      "https://gtngdpenvgluhplxharp.supabase.co/functions/v1/line-verify",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_KEY
+        },
+        body: JSON.stringify({ idToken })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || !result.verified) {
+      throw new Error(result.error || "ยืนยันตัวตนไม่สำเร็จ");
+    }
+
+    verifiedLineUser = result;
+
+    status.textContent = "เข้าสู่ระบบ LINE สำเร็จแล้ว ✓";
+    button.textContent = "เข้าสู่ระบบแล้ว";
+    button.disabled = true;
+
+  } catch (error) {
+    console.error("LINE verification error:", error);
+    status.textContent = "เข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่";
+  }
+}
+
+document.getElementById("lineLoginBtn").addEventListener("click", () => {
+  if (liff.isLoggedIn()) {
+    verifyLineLogin();
+  } else {
+    liff.login();
+  }
+});
+
+liff.init({ liffId: LIFF_ID })
+  .then(() => {
+    if (liff.isLoggedIn()) {
+      verifyLineLogin();
+    }
+  })
+  .catch(error => {
+    console.error("LIFF initialization error:", error);
+    document.getElementById("lineLoginStatus").textContent =
+      "ไม่สามารถเชื่อมต่อ LINE ได้";
+  });
 
 function safeText(value){
  return String(value ?? "").replace(/[&<>"']/g, c => ({
