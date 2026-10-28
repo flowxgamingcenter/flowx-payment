@@ -50,14 +50,22 @@ nav{
 }
 
 /* HERO */
-.hero{
- position:relative;overflow:hidden;
- min-height:360px;padding:55px 0 38px;
- background:
- radial-gradient(ellipse at 15% 70%,#087bff88,transparent 35%),
- radial-gradient(ellipse at 85% 20%,#e83b9c66,transparent 32%),
- linear-gradient(120deg,#07132b,#0d3470 48%,#07132b);
- border-bottom:3px solid #4acfff;
+.hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 360px;
+  padding: 55px 0 38px;
+
+  background:
+    linear-gradient(90deg, rgba(7,19,43,.98) 0%, rgba(7,19,43,.72) 45%, rgba(7,19,43,.18) 100%),
+    radial-gradient(ellipse at 15% 70%, #087bff88, transparent 35%),
+    radial-gradient(ellipse at 85% 20%, #e83b9c66, transparent 32%),
+    url("assets/nagi-main.png");
+
+  background-position: center, center, center, right 35%;
+  background-size: cover, auto, auto, auto 125%;
+  background-repeat: no-repeat;
+  border-bottom: 3px solid #4acfff;
 }
 .hero:before{
  content:"";position:absolute;inset:0;
