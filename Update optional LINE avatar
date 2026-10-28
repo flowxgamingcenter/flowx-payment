@@ -727,11 +727,6 @@ document.getElementById("reviewForm").addEventListener("submit", async event => 
     return;
   }
 
-  if (!selectedAvatar) {
-    statusBox.textContent = "กรุณาเลือกตัวละครเป็นรูปโปรไฟล์ก่อน";
-    return;
-  }
-
   const idToken = liff.getIDToken();
 
   if (!idToken) {
@@ -757,8 +752,8 @@ document.getElementById("reviewForm").addEventListener("submit", async event => 
           game: game,
           rating: selectedRating,
           review_text: reviewText,
-          avatar_type: "flowx",
-          avatar_key: selectedAvatar
+          avatar_type: selectedAvatar ? "flowx" : "line",
+avatar_key: selectedAvatar || null
         })
       }
     );
