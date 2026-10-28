@@ -632,7 +632,18 @@ function renderReviews(){
     </div>
     <div class="reviewBody">
      <div class="reviewTop">
-      <div class="reviewName">${safeText(review.display_name)}</div>
+    <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;">
+  <img
+    src="${safeText(review.avatar_url || review.line_picture_url || '')}"
+    alt="Avatar"
+    onerror="this.style.display='none'"
+    style="width:42px;height:42px;object-fit:cover;border-radius:50%;border:2px solid #147bff;flex-shrink:0;${review.avatar_url || review.line_picture_url ? '' : 'display:none;'}"
+  >
+  <div class="reviewName">
+    ${safeText(review.display_name)}
+    ${review.line_user_id ? '<span style="display:inline-flex;align-items:center;margin-left:5px;padding:3px 7px;border-radius:20px;background:#06c755;color:white;font-size:10px;font-weight:700;">✓ LINE</span>' : ''}
+  </div>
+</div>
       <span class="gamePill">${safeText(review.game)}</span>
      </div>
      <div class="reviewStars">${"★".repeat(rating)}${"☆".repeat(5-rating)}</div>
@@ -650,7 +661,7 @@ async function loadReviews(){
 
  try{
   const response = await fetch(
-   `${SUPABASE_URL}/rest/v1/reviews?select=id,display_name,game,rating,review_text,created_at&order=created_at.desc&limit=200`,
+  `${SUPABASE_URL}/rest/v1/reviews?select=id,display_name,game,rating,review_text,created_at,line_user_id,line_picture_url,avatar_type,avatar_key,avatar_url&order=created_at.desc&limit=200`,
    {headers}
   );
 
