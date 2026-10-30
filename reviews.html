@@ -555,6 +555,175 @@ footer strong{font-family:Orbitron,sans-serif;color:#75eaff}
   }
 }
 
+/* =========================================
+   FLOWX HAND-DRAWN NEON FRAME V2
+   ========================================= */
+
+/* พื้นหลังการ์ดรีวิว */
+.review {
+  position: relative;
+  overflow: visible;
+  isolation: isolate;
+  border: 0;
+  border-radius: 28px 35px 30px 32px;
+  background:
+    radial-gradient(ellipse at 90% 100%, #16428b55, transparent 65%),
+    linear-gradient(145deg, #07132d, #091b3c 80%, #101b46);
+  color: #e8f5ff;
+  padding: 8px;
+  box-shadow: none;
+  clip-path: none;
+}
+
+.review:hover {
+  box-shadow: none;
+}
+
+/* กรอบวาดมือ SVG */
+.review > .sketchFrame,
+.formpanel > .sketchFrame {
+  position: absolute;
+  inset: -8px;
+  width: calc(100% + 16px);
+  height: calc(100% + 16px);
+  z-index: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.sketchFrame path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.sketchFrame .outer {
+  stroke: #25caff;
+  stroke-width: 3;
+  filter: drop-shadow(0 0 5px #00bfff);
+}
+
+.sketchFrame .inner {
+  stroke: #89edff;
+  stroke-width: 1.6;
+  opacity: .9;
+  filter: drop-shadow(0 0 3px #1dcaff);
+}
+
+.sketchFrame .scratch {
+  stroke: #52dfff;
+  stroke-width: 1;
+  opacity: .65;
+}
+
+/* หัวการ์ดรีวิว */
+.reviewBanner {
+  height: auto;
+  min-height: 65px;
+  border: 0;
+  border-radius: 23px 26px 10px 12px;
+  background: linear-gradient(110deg, #091735, #112f65);
+  padding: 12px 14px;
+}
+
+.reviewBanner::before,
+.reviewBanner::after,
+.review::after {
+  display: none;
+}
+
+.reviewBody {
+  background: transparent;
+  padding: 12px 14px 16px;
+}
+
+.reviewName,
+.reviewText {
+  color: #e8f5ff;
+}
+
+.reviewDate {
+  color: #8caed7;
+}
+
+.gamePill {
+  background: #142c62;
+  border: 1px solid #4cd6ff;
+  color: #d6f7ff;
+}
+
+/* กรอบเขียนรีวิว */
+.formpanel {
+  position: sticky;
+  top: 82px;
+  isolation: isolate;
+  overflow: visible;
+  border: 0;
+  border-radius: 35px 29px 34px 30px;
+  background:
+    radial-gradient(circle at 100% 100%, #203c8a55, transparent 60%),
+    linear-gradient(145deg, #07132d, #0b1d43);
+  color: #e9f6ff;
+  padding: 24px;
+  box-shadow: none;
+}
+
+.formBanner {
+  margin: -24px -24px 20px;
+  border: 0;
+  border-radius: 25px 28px 10px 10px;
+  background: linear-gradient(110deg, #07152f, #102c65);
+  color: #8ceaff;
+}
+
+.formpanel h2,
+.field label {
+  color: #e8f5ff;
+}
+
+.formpanel > p,
+.formnote {
+  color: #a9c8e9;
+}
+
+.field input,
+.field select,
+.field textarea {
+  color: #e8f5ff;
+  background: #102449;
+  border: 1px solid #477bc1;
+  border-radius: 12px;
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: #9eb5d6;
+}
+
+.avatarPicker {
+  background: #102449;
+  border-color: #368bca;
+}
+
+#status {
+  color: #86dfff;
+}
+
+@media(max-width:760px) {
+  .formpanel {
+    position: static;
+  }
+}
+
+
+/* ให้เนื้อหาอยู่เหนือกรอบ SVG */
+.review > :not(.sketchFrame),
+.formpanel > :not(.sketchFrame) {
+  position: relative;
+  z-index: 1;
+}
+
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
@@ -1074,6 +1243,60 @@ avatar_key: selectedAvatar || null
   }
 });
 
+/* FLOWX SKETCH FRAME ENGINE */
+function makeSketchFrame() {
+  const ns = "http://www.w3.org/2000/svg";
+
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("class", "sketchFrame");
+  svg.setAttribute("viewBox", "0 0 400 500");
+  svg.setAttribute("preserveAspectRatio", "none");
+  svg.setAttribute("aria-hidden", "true");
+
+  const paths = [
+    {
+      cls: "outer",
+      d: "M 47 12 C 100 4, 151 17, 210 11 S 340 6, 365 22 C 393 36, 390 80, 390 116 C 397 211, 385 313, 393 442 Q 390 489, 345 488 C 249 493, 139 480, 58 490 Q 11 486, 12 446 C 5 326, 16 204, 10 85 Q 10 27, 47 12 Z"
+    },
+    {
+      cls: "inner",
+      d: "M 53 22 C 132 16, 175 26, 247 21 Q 365 11, 375 41 C 385 81, 377 164, 382 241 S 387 423, 374 459 Q 364 476, 326 476 C 237 480, 135 468, 65 477 Q 27 477, 25 437 C 18 326, 30 224, 23 96 Q 20 37, 53 22 Z"
+    },
+    {
+      cls: "scratch",
+      d: "M 38 17 Q 130 1, 220 13 M 379 62 Q 399 153, 388 247 M 360 484 Q 245 497, 155 485 M 12 365 Q 3 430, 20 466"
+    }
+  ];
+
+  paths.forEach(item => {
+    const path = document.createElementNS(ns, "path");
+    path.setAttribute("class", item.cls);
+    path.setAttribute("d", item.d);
+    svg.appendChild(path);
+  });
+
+  return svg;
+}
+
+function applySketchFrames() {
+  document.querySelectorAll(".review, .formpanel")
+    .forEach(card => {
+      if (card.querySelector(":scope > .sketchFrame")) return;
+      card.prepend(makeSketchFrame());
+    });
+}
+
+/* รองรับรีวิวที่โหลดใหม่จาก Supabase */
+const sketchObserver = new MutationObserver(() => {
+  applySketchFrames();
+});
+
+sketchObserver.observe(
+  document.getElementById("reviewList"),
+  { childList: true }
+);
+
+applySketchFrames();
 loadReviews();
 </script>
 </body>
