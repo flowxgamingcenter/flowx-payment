@@ -1185,21 +1185,37 @@ background-size: cover, cover, cover, 100% auto !important;
     width: 100%;
     min-width: 0;
   }
-
-  .heroButtons {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 6px;
-    width: 100%;
-    margin-top: 16px;
-  }
-
-  .heroButtons .fxArtBtn {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 340 / 145;
-    min-width: 0;
-  }
+.heroButtons {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 12px !important;
+  width: 100% !important;
+  margin: 20px auto 0 !important;
 }
+
+ .heroButtons .fxArtBtn {
+  display: block !important;
+  width: 100% !important;
+  max-width: 440px !important;
+  height: auto !important;
+  aspect-ratio: 340 / 145 !important;
+  min-width: 0 !important;
+  background-size: contain !important;
+  background-position: center !important;
+}
+
+/* เขียนรีวิวอยู่ด้านบน */
+.heroButtons .fxWrite {
+  order: 1;
+}
+
+/* ดูรีวิวอยู่ด้านล่าง */
+.heroButtons .fxView {
+  order: 2;
+}
+
+} /* ปิด @media มือถือ */
 
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -1867,7 +1883,7 @@ function makeSketchFrame() {
 }
 
 function applySketchFrames() {
-  document.querySelectorAll(".review, .formpanel")
+ document.querySelectorAll(".review")
     .forEach(card => {
       if (card.querySelector(":scope > .sketchFrame")) return;
       card.prepend(makeSketchFrame());
