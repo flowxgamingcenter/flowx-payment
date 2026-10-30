@@ -60,18 +60,15 @@ nav{
     linear-gradient(90deg, rgba(7,19,43,.98) 0%, rgba(7,19,43,.72) 45%, rgba(7,19,43,.18) 100%),
     radial-gradient(ellipse at 15% 70%, #087bff88, transparent 35%),
     radial-gradient(ellipse at 85% 20%, #e83b9c66, transparent 32%),
-    url("assets/flowx-review-cover.png.png");
+    url("assets/FLOWX_review_background.png");
 
 background-position: center, center, center, center;
-background-size: cover, cover, cover, cover;
+background-size: cover, cover, cover, contain;
   background-repeat: no-repeat;
   border-bottom: 3px solid #4acfff;
 }
-.hero:before{
- content:"";position:absolute;inset:0;
- background:repeating-linear-gradient(130deg,
- transparent 0 35px,#ffffff08 36px 38px);
- pointer-events:none;
+.hero::before {
+  display: none;
 }
 .hero:after{
  content:"⚽";position:absolute;right:5%;bottom:-55px;
