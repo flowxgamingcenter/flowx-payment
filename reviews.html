@@ -50,29 +50,38 @@ nav{
 }
 
 /* HERO */
+
+/* HERO - Responsive */
 .hero {
   position: relative;
   overflow: hidden;
-  min-height: 360px;
-  padding: 55px 0 38px;
+  width: 100%;
+  min-height: 0;
+  aspect-ratio: 1851 / 849;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   background:
-    linear-gradient(90deg, rgba(7,19,43,.98) 0%, rgba(7,19,43,.72) 45%, rgba(7,19,43,.18) 100%),
+    linear-gradient(90deg,
+      rgba(7,19,43,.80) 0%,
+      rgba(7,19,43,.45) 45%,
+      rgba(7,19,43,.18) 100%),
     radial-gradient(ellipse at 15% 70%, #087bff88, transparent 35%),
     radial-gradient(ellipse at 85% 20%, #e83b9c66, transparent 32%),
     url("assets/FLOWX_review_background.png");
 
-background-position: center, center, center, center;
-background-size: cover, cover, cover, contain;
+  background-position: center;
+  background-size: cover, cover, cover, cover;
   background-repeat: no-repeat;
   border-bottom: 3px solid #4acfff;
 }
 .hero::before {
   display: none;
 }
-.hero:after{
- content:"⚽";position:absolute;right:5%;bottom:-55px;
- font-size:250px;opacity:.09;transform:rotate(-20deg);
+.hero::after {
+  display: none;
 }
 .heroContent{position:relative;z-index:1;text-align:center}
 .eyebrow{
@@ -275,7 +284,15 @@ footer strong{font-family:Orbitron,sans-serif;color:#75eaff}
  .stats{grid-template-columns:1fr 1fr}
  .stat:last-child{grid-column:1/-1}
  .navlinks a{padding:8px 12px;font-size:12px}
- .hero{padding:42px 0 30px}
+ .hero {
+  min-height: 0;
+  aspect-ratio: auto;
+  padding: 230px 12px 35px;
+  background-position: center, center, center, center top;
+  background-size: cover, cover, cover, 100% auto;
+  background-repeat: no-repeat;
+}
+
 }
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
