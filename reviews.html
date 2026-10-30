@@ -724,6 +724,393 @@ footer strong{font-family:Orbitron,sans-serif;color:#75eaff}
   z-index: 1;
 }
 
+/* ลบเส้นขอบของส่วนปก FLOWX */
+.hero {
+  border: none !important;
+}
+
+.hero::before,
+.hero::after {
+  display: none !important;
+}
+
+/* FLOWX NEON BUTTONS */
+
+.fxArtBtn {
+  --fxColor: #70dfff;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 68px;
+  padding: 14px 25px;
+  border: 2px solid var(--fxColor);
+  border-radius: 18px 23px 17px 21px;
+  background: linear-gradient(135deg,#10254d,#09142c);
+  color: #fff;
+  font-weight: 800;
+  font-size: 16px;
+  text-align: center;
+  text-shadow: 0 0 8px var(--fxColor);
+  box-shadow:
+    0 0 6px var(--fxColor),
+    inset 0 0 12px #54caff22;
+  transition: .2s ease;
+}
+
+.fxArtBtn::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px solid var(--fxColor);
+  border-radius: 16px 19px 15px 18px;
+  transform: rotate(-.5deg);
+  opacity: .7;
+  pointer-events: none;
+}
+
+.fxArtBtn:hover:not(:disabled) {
+  transform: translateY(-3px);
+  filter: brightness(1.15);
+}
+
+.fxEgo {
+  --fxColor: #64dfff;
+}
+
+.fxAnri {
+  --fxColor: #ff9fda;
+  background: linear-gradient(135deg,#352143,#111b3b);
+}
+
+#lineLoginBtn,
+#submitBtn {
+  width: 100%;
+}
+
+.fxArtBtn:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+/* FLOWX — UNIFIED WRITE REVIEW FRAME */
+
+.formpanel {
+  position: sticky;
+  top: 82px;
+  isolation: isolate;
+  overflow: visible;
+  border: none;
+  border-radius: 30px;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 90% 0%,
+      #a04cce20, transparent 48%),
+    linear-gradient(145deg,#07132d,#0b1d43);
+  color: #eaf7ff;
+  box-shadow: none;
+}
+
+/* หัวป้ายและฟอร์มอยู่ในกรอบเดียว */
+.formpanel .formBanner {
+  position: relative;
+  margin: 0 0 20px;
+  padding: 12px 4px 18px;
+  border: 0;
+  border-bottom: 1px dashed #65dfff88;
+  border-radius: 0;
+  background: transparent;
+  color: #8ceaff;
+  text-align: left;
+  text-shadow: 0 0 10px #25caff88;
+}
+
+.formpanel .formBanner::before,
+.formpanel .formBanner::after {
+  display: none;
+}
+
+.formpanel .formBanner small {
+  color: #ff9ed7;
+  letter-spacing: 2px;
+}
+
+.formpanel h2,
+.formpanel .field label {
+  color: #eaf7ff;
+}
+
+.formpanel > p,
+.formpanel .formnote {
+  color: #a9c8e9;
+}
+
+.formpanel .field input,
+.formpanel .field select,
+.formpanel .field textarea {
+  background: #102449;
+  color: #eaf7ff;
+  border: 1px solid #598ed3;
+  border-radius: 12px;
+}
+
+.formpanel .field input:focus,
+.formpanel .field select:focus,
+.formpanel .field textarea:focus {
+  border-color: #77ddff;
+  box-shadow: 0 0 10px #35caff55;
+}
+
+@media (max-width: 760px) {
+  .formpanel {
+    position: static;
+  }
+}
+
+/* FLOWX NEON FOOTBALL RATING */
+
+#ratingPick {
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+  padding: 12px 0;
+}
+
+#ratingPick button {
+  width: 48px;
+  height: 48px;
+  padding: 2px;
+  display: grid;
+  place-items: center;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 50%;
+  color: var(--ballColor);
+  opacity: .35;
+  filter: grayscale(1);
+  transition: .2s ease;
+}
+
+#ratingPick button:nth-child(1) {
+  --ballColor: #ff638d;
+}
+#ratingPick button:nth-child(2) {
+  --ballColor: #ffab68;
+}
+#ratingPick button:nth-child(3) {
+  --ballColor: #ffe078;
+}
+#ratingPick button:nth-child(4) {
+  --ballColor: #70d6ff;
+}
+#ratingPick button:nth-child(5) {
+  --ballColor: #86e9bd;
+}
+
+#ratingPick button svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+#ratingPick button.active,
+#ratingPick button:hover {
+  opacity: 1;
+  filter: none;
+  transform: translateY(-3px) scale(1.07);
+}
+
+#ratingPick button.active svg,
+#ratingPick button:hover svg {
+  filter:
+    drop-shadow(0 0 3px currentColor)
+    drop-shadow(0 0 8px currentColor)
+    drop-shadow(0 0 12px currentColor);
+}
+
+@media(max-width:480px) {
+  #ratingPick button {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+/* FLOWX BLUE LOCK NEON STAT ICONS */
+
+.fxStatIcon {
+  width: 82px;
+  height: 82px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  background: #09172f;
+  box-shadow: inset 0 0 18px #2077cb22;
+}
+
+.fxStatIcon svg {
+  width: 70px;
+  height: 70px;
+  overflow: visible;
+}
+
+.fxRing {
+  fill: #142441;
+  stroke-width: 2;
+  filter: drop-shadow(0 0 4px currentColor);
+}
+
+.fxSketch {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter:
+    drop-shadow(0 0 3px currentColor)
+    drop-shadow(0 0 6px currentColor);
+}
+
+.fxCyan {
+  color: #70dcff;
+  stroke: currentColor;
+}
+
+.fxPink {
+  color: #ff8ed3;
+  stroke: currentColor;
+}
+
+.fxCheck {
+  stroke-width: 4;
+}
+
+.fxIconText {
+  fill: #8ce9ff;
+  font: 700 8px Orbitron, sans-serif;
+  letter-spacing: 1px;
+}
+
+.fxIconStars {
+  fill: #ffda76;
+  font-size: 14px;
+  font-weight: 900;
+  filter: drop-shadow(0 0 4px #ffda76);
+}
+
+@media(max-width:480px) {
+  .fxStatIcon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .fxStatIcon svg {
+    width: 52px;
+    height: 52px;
+  }
+
+  .stat {
+    gap: 8px;
+  }
+}
+
+/* FLOWX ORIGINAL ART BUTTONS — FINAL */
+
+.fxArtBtn {
+  display: inline-block;
+  position: relative;
+  width: 340px;
+  max-width: 100%;
+  height: 145px;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  box-shadow: none;
+  text-shadow: none;
+  overflow: visible;
+  vertical-align: middle;
+  transition: transform .2s ease, filter .2s ease;
+}
+
+/* ซ่อนข้อความเดิมเฉพาะทางสายตา
+   เพื่อไม่ให้ทับตัวหนังสือในภาพ */
+.fxArtBtn > span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ไม่ใช้กรอบ CSS ซ้อนทับภาพต้นฉบับ */
+.fxArtBtn::before,
+.fxArtBtn::after {
+  display: none !important;
+}
+
+/* ANRI — ดูรีวิวลูกค้า */
+
+.fxView {
+  background-image: url("assets/FLOWX_Anri_Reviews_transparent.png");
+}
+
+.fxLogin {
+  background-image: url("assets/FLOWX_Anri_LINE_transparent.png");
+}
+
+.fxWrite {
+  background-image: url("assets/FLOWX_Ego_Write_transparent.png");
+}
+
+.fxSubmit {
+  background-image: url("assets/FLOWX_Ego_Submit_transparent.png");
+}
+
+
+/* ปุ่มภายในฟอร์ม */
+#lineLoginBtn,
+#submitBtn {
+  display: block;
+  width: 100%;
+  height: 145px;
+  margin: 0 auto;
+}
+
+/* เอฟเฟกต์กดและชี้ */
+.fxArtBtn:hover:not(:disabled) {
+  transform: translateY(-3px);
+  filter: brightness(1.12);
+}
+
+.fxArtBtn:active:not(:disabled) {
+  transform: scale(.97);
+}
+
+.fxArtBtn:disabled {
+  opacity: .65;
+  cursor: not-allowed;
+}
+
+/* รองรับมือถือ */
+@media (max-width: 480px) {
+  .fxArtBtn {
+    width: 100%;
+    height: 125px;
+  }
+
+  #lineLoginBtn,
+  #submitBtn {
+    height: 125px;
+  }
+}
+
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
@@ -746,28 +1133,88 @@ footer strong{font-family:Orbitron,sans-serif;color:#75eaff}
   <h2>REVIEW CENTER</h2>
   <p>ทุกการเติมมีเรื่องราว ทุกรีวิวมีความหมาย<br>
   แบ่งปันประสบการณ์ของคุณกับ FLOWX GAMING CENTER</p>
-  <div class="heroButtons">
-   <a class="btn secondary" href="#reviews">ดูรีวิวลูกค้า ↓</a>
-   <a class="btn primary" href="#write">✎ เขียนรีวิวของคุณ</a>
-  </div>
- </div>
+ <div class="heroButtons">
+  <a class="fxArtBtn fxAnri fxView" href="#reviews">
+    <span>ดูรีวิวลูกค้า</span>
+  </a>
+  <a class="fxArtBtn fxEgo fxWrite" href="#write">
+   <span>เขียนรีวิวของคุณ</span>
+  </a>
+</div>
+</div>
+
 </header>
 
+
 <main class="container">
- <section class="stats">
+
+<section class="stats">
+
+  <!-- AVERAGE RATING -->
   <div class="stat">
-   <div class="statIcon">♛</div>
-   <div><small>AVERAGE RATING</small><strong id="average">—</strong></div>
+    <div class="fxStatIcon">
+      <svg viewBox="0 0 80 80" aria-hidden="true">
+        <circle class="fxRing fxCyan"
+          cx="40" cy="40" r="30"/>
+        <path class="fxSketch fxCyan"
+          d="M22 16 Q40 5 58 17"
+          stroke-dasharray="4 4"/>
+        <path class="fxSketch fxPink fxCheck"
+          d="M22 42 L34 53 L59 27"/>
+        <text x="40" y="69"
+          text-anchor="middle"
+          class="fxIconText" id="averageIcon">—</text>
+      </svg>
+    </div>
+    <div>
+      <small>AVERAGE RATING</small>
+      <strong id="average">—</strong>
+    </div>
   </div>
+
+  <!-- PLAYER RATING -->
   <div class="stat">
-   <div class="statIcon">★</div>
-   <div><small>PLAYER RATING</small><strong>★★★★★</strong></div>
+    <div class="fxStatIcon">
+      <svg viewBox="0 0 80 80" aria-hidden="true">
+        <circle class="fxRing fxPink"
+          cx="40" cy="40" r="30"/>
+        <path class="fxSketch fxCyan"
+          d="M16 41 H64"/>
+        <text x="40" y="46"
+          text-anchor="middle"
+          class="fxIconStars">★★★★★</text>
+        <text x="40" y="65"
+          text-anchor="middle"
+          class="fxIconText">STAR</text>
+      </svg>
+    </div>
+    <div>
+      <small>PLAYER RATING</small>
+      <strong>★★★★★</strong>
+    </div>
   </div>
+
+  <!-- TOTAL REVIEWS -->
   <div class="stat">
-   <div class="statIcon">▤</div>
-   <div><small>TOTAL REVIEWS</small><strong id="total">—</strong></div>
+    <div class="fxStatIcon">
+      <svg viewBox="0 0 80 80" aria-hidden="true">
+        <circle class="fxRing fxCyan"
+          cx="40" cy="40" r="30"/>
+        <rect class="fxSketch fxPink"
+          x="22" y="26" width="37" height="27"
+          rx="6"/>
+        <path class="fxSketch fxCyan"
+          d="M28 35 H53 M28 42 H47
+             M29 53 L28 59 L38 53"/>
+      </svg>
+    </div>
+    <div>
+      <small>TOTAL REVIEWS</small>
+      <strong id="total">—</strong>
+    </div>
   </div>
- </section>
+
+</section>
 
  <div class="content">
   <section id="reviews">
@@ -809,9 +1256,11 @@ footer strong{font-family:Orbitron,sans-serif;color:#75eaff}
    <p>รีวิวของคุณช่วยให้เกมเมอร์คนอื่นตัดสินใจได้ง่ายขึ้น</p>
 
    <div class="lineLoginBox">
-  <button type="button" id="lineLoginBtn">
-    เข้าสู่ระบบด้วย LINE
-  </button>
+<button type="button"
+        id="lineLoginBtn"
+        class="fxArtBtn fxAnri fxLogin">
+  <span>เข้าสู่ระบบ LINE</span>
+</button>
   <p id="lineLoginStatus">กรุณาเข้าสู่ระบบ LINE ก่อนเขียนรีวิว</p>
 </div><form id="reviewForm">
   <div class="formgrid">
@@ -833,13 +1282,14 @@ footer strong{font-family:Orbitron,sans-serif;color:#75eaff}
 
     <div class="field">
       <label>คะแนนความพึงพอใจ *</label>
-      <div class="ratingpick" id="ratingPick">
-        <button type="button" data-rating="1">★</button>
-        <button type="button" data-rating="2">★</button>
-        <button type="button" data-rating="3">★</button>
-        <button type="button" data-rating="4">★</button>
-        <button type="button" data-rating="5">★</button>
-      </div>
+    <div class="ratingpick" id="ratingPick">
+  <button type="button" data-rating="1" aria-label="1 คะแนน"></button>
+  <button type="button" data-rating="2" aria-label="2 คะแนน"></button>
+  <button type="button" data-rating="3" aria-label="3 คะแนน"></button>
+  <button type="button" data-rating="4" aria-label="4 คะแนน"></button>
+  <button type="button" data-rating="5" aria-label="5 คะแนน"></button>
+</div>
+
     </div>
 
     <div class="field">
@@ -871,9 +1321,11 @@ footer strong{font-family:Orbitron,sans-serif;color:#75eaff}
     รีวิวที่ส่งจะปรากฏบนเว็บไซต์สาธารณะ
   </p>
 
-  <button class="btn primary" id="submitBtn" type="submit">
-    ➤ ส่งรีวิว ♡
-  </button>
+ <button class="fxArtBtn fxEgo fxSubmit"
+        id="submitBtn" type="submit">
+  <span>ส่งรีวิว</span>
+</button>
+
 
   <div id="status" role="status" aria-live="polite"></div>
 </form>
@@ -1001,7 +1453,7 @@ const profile = await liff.getProfile();
 document.getElementById("displayName").value =
   profile.displayName || "";
     status.textContent = "เข้าสู่ระบบ LINE สำเร็จแล้ว ✓";
-    button.textContent = "เข้าสู่ระบบแล้ว";
+    button.querySelector("span").textContent = "เข้าสู่ระบบแล้ว";
     button.disabled = true;
 
   } catch (error) {
@@ -1129,15 +1581,61 @@ async function loadReviews(){
    ? (allReviews.reduce((sum,item)=>sum+Number(item.rating||0),0)/count).toFixed(1)
    : "—";
 
-  document.getElementById("total").textContent = count;
-  document.getElementById("average").textContent = average;
-  renderReviews();
+ document.getElementById("total").textContent = count;
+document.getElementById("average").textContent = average;
+document.getElementById("averageIcon").textContent = average;
+renderReviews();
 
  }catch(error){
   console.error("Supabase load error:",error);
   list.innerHTML='<div class="empty">โหลดรีวิวไม่สำเร็จ กรุณาตรวจสอบการเชื่อมต่อ Supabase</div>';
  }
 }
+
+/* FLOWX NEON FOOTBALL SVG */
+
+const footballSVG = `
+<svg viewBox="0 0 80 80"
+     xmlns="http://www.w3.org/2000/svg"
+     aria-hidden="true">
+  <circle cx="40" cy="40" r="31"
+    fill="#091a37"
+    stroke="currentColor"
+    stroke-width="3.5"/>
+
+  <circle cx="40" cy="40" r="28"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1"
+    opacity=".7"/>
+
+  <g fill="none"
+     stroke="currentColor"
+     stroke-width="3"
+     stroke-linecap="round"
+     stroke-linejoin="round">
+    <path d="M40 23 L55 34 L49 52
+             L31 52 L25 34 Z"/>
+    <path d="M40 23 L40 9
+             M55 34 L69 29
+             M49 52 L57 67
+             M31 52 L23 67
+             M25 34 L11 29"/>
+  </g>
+
+  <path d="M18 18 Q36 4 55 18
+           M12 50 Q21 66 39 65"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.3"
+    opacity=".8"/>
+</svg>
+`;
+
+document.querySelectorAll("#ratingPick button")
+  .forEach(button => {
+    button.innerHTML = footballSVG;
+  });
 
 /* STAR RATING */
 document.getElementById("ratingPick").addEventListener("click",event=>{
@@ -1170,7 +1668,7 @@ document.getElementById("reviewForm").addEventListener("submit", async event => 
   }
 
   if (!selectedRating || selectedRating > 5) {
-    statusBox.textContent = "กรุณาเลือกคะแนนดาวก่อนส่งรีวิว";
+    statusBox.textContent = "กรุณาเลือกคะแนนลูกฟุตบอลก่อนส่งรีวิว";
     return;
   }
 
