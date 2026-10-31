@@ -1363,6 +1363,28 @@ background-size: cover, cover, cover, 100% auto !important;
  .content > * {min-width:0}
  .formpanel {position:relative;top:auto}
 }
+
+/* FLOWX — FULL HEIGHT REVIEW FORM FRAME */
+.formpanel {
+  height: auto !important;
+  min-height: 100%;
+  align-self: stretch;
+  overflow: visible;
+  background-clip: padding-box, border-box;
+}
+
+.formpanel::before {
+  bottom: 0;
+  border-radius: inherit;
+}
+
+@media (max-width: 760px) {
+  .formpanel {
+    min-height: 0;
+    height: auto !important;
+    align-self: auto;
+  }
+}
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
