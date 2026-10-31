@@ -1287,10 +1287,10 @@ background-size: cover, cover, cover, 100% auto !important;
   display: none !important;
 }
 
-/* FLOWX — MOBILE RESPONSIVE IMAGES */
+/* FLOWX — MOBILE BACKGROUND FIX */
 @media (max-width: 760px) {
 
-  /* รูปปก: แสดงภาพครบ ไม่ยืด ไม่ตัด */
+  /* ภาพปก */
   .hero {
     background-image:
       linear-gradient(
@@ -1300,19 +1300,12 @@ background-size: cover, cover, cover, 100% auto !important;
       ),
       url("assets/FLOWX_review_background.png") !important;
 
-    background-size:
-      100% 100%,
-      100% auto !important;
-
-    background-position:
-      center top,
-      center top !important;
-
+    background-size: 100% 100%, cover !important;
+    background-position: center, center top !important;
     background-repeat: no-repeat !important;
-    background-color: #07132d;
   }
 
-  /* รูปเหนือกรอบเขียนรีวิว */
+  /* ภาพเหนือกรอบเขียนรีวิว */
   .formpanel::before {
     background-image:
       linear-gradient(
@@ -1323,19 +1316,72 @@ background-size: cover, cover, cover, 100% auto !important;
       ),
       url("assets/โปสเตอร์ Blue Lock โทนสีน้ำเงินเข้ม.png") !important;
 
-    background-size:
-      100% 100%,
-      100% auto !important;
-
-    background-position:
-      center top,
-      center top !important;
-
+    background-size: 100% 100%, cover !important;
+    background-position: center top, center top !important;
     background-repeat: no-repeat !important;
-    z-index: 0;
   }
 }
 
+.flowx-consent-overlay[hidden] {
+  display: none !important;
+}
+
+.flowx-consent-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(13, 17, 38, .75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+
+.flowx-consent-box {
+  width: 100%;
+  max-width: 440px;
+  max-height: 90dvh;
+  overflow-y: auto;
+  background: #fffafc;
+  color: #303047;
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 15px 55px rgba(0,0,0,.3);
+}
+
+.flowx-consent-box h2 {
+  text-align: center;
+  color: #7751a4;
+  margin: 0 0 16px;
+}
+
+.flowx-consent-box p {
+  font-size: 14px;
+  line-height: 1.75;
+  margin: 0 0 13px;
+}
+
+#flowxConsentContinue,
+#flowxConsentCancel {
+  width: 100%;
+  border: 0;
+  border-radius: 12px;
+  padding: 13px;
+  cursor: pointer;
+  font: inherit;
+}
+
+#flowxConsentContinue {
+  background: #8d69d3;
+  color: white;
+  font-weight: bold;
+}
+
+#flowxConsentCancel {
+  background: transparent;
+  color: #777;
+  margin-top: 5px;
+}
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
@@ -1549,7 +1595,12 @@ background-size: cover, cover, cover, 100% auto !important;
  <button class="fxArtBtn fxEgo fxSubmit"
         id="submitBtn" type="submit">
   <span>ส่งรีวิว</span>
-</button>
+</button> 
+<p style="text-align:center; font-size:clamp(12px,1vw,13px); line-height:1.7; color:#b9c9e8; margin:12px 0 4px;">
+  <span style="color:#ffacd7;">♡ แอบกระซิบก่อนส่งนิดนึงนะคะ</span><br>
+  กรุณาตรวจสอบรีวิวให้เรียบร้อยก่อนกดส่ง<br>
+  เนื่องจากไม่สามารถแก้ไขหรือลบได้ภายหลังค่ะ
+</p>
 
 
   <div id="status" role="status" aria-live="polite"></div>
@@ -1691,7 +1742,19 @@ document.getElementById("displayName").value =
 
 }
 
+const consentModal = document.getElementById("flowxConsentModal");
+
 document.getElementById("lineLoginBtn").addEventListener("click", () => {
+  consentModal.hidden = false;
+});
+
+document.getElementById("flowxConsentCancel").addEventListener("click", () => {
+  consentModal.hidden = true;
+});
+
+document.getElementById("flowxConsentContinue").addEventListener("click", () => {
+  consentModal.hidden = true;
+
   if (liff.isLoggedIn()) {
     verifyLineLogin();
   } else {
@@ -1700,15 +1763,18 @@ document.getElementById("lineLoginBtn").addEventListener("click", () => {
 });
 
 
+
 liff.init({
   liffId: LIFF_ID,
   withLoginOnExternalBrowser: true
 })
   .then(() => {
-    if (liff.isLoggedIn()) {
-      verifyLineLogin();
-    }
-  })
+  // ไม่ตรวจสอบ LINE อัตโนมัติเมื่อเปิดเว็บ
+  // ลูกค้าต้องกดปุ่มและอ่านข้อความแจ้งก่อน
+
+  document.getElementById("lineLoginStatus").textContent =
+    "กดเข้าสู่ระบบ LINE เพื่อเริ่มเขียนรีวิว ♡";
+})
   .catch(error => {
     console.error("LIFF initialization error:", error);
     document.getElementById("lineLoginStatus").textContent =
@@ -2030,5 +2096,28 @@ sketchObserver.observe(
 applySketchFrames();
 loadReviews();
 </script>
+<div id="flowxConsentModal" class="flowx-consent-overlay" hidden>
+  <div class="flowx-consent-box" role="dialog" aria-modal="true"
+       aria-labelledby="flowxConsentTitle">
+    <h2 id="flowxConsentTitle">♡ ก่อนเข้าสู่ระบบ LINE</h2>
+
+    <p>FLOWX ขอใช้บัญชี LINE เพื่อยืนยันตัวตน ให้ทุกรีวิวน่าเชื่อถือและโปร่งใสน้า 💗</p>
+
+    <p>🎀 <b>ชื่อผู้รีวิว</b> — ใช้ชื่อ LINE จริงเท่านั้น ไม่สามารถเปลี่ยนเป็นชื่ออื่นได้</p>
+
+    <p>🧸 <b>รูปโปรไฟล์</b> — เลือกใช้รูป LINE หรืออวตาร์น่ารักๆ จากทางร้านได้เลย</p>
+
+    <p>🌷 <b>ข้อมูลที่เปิดเผย</b> — เมื่อส่งรีวิว ชื่อ LINE รูปที่เลือก คะแนน และข้อความรีวิวจะปรากฏต่อสาธารณะ ทุกคนสามารถมองเห็นได้</p>
+
+    <p>🔒 <b>ความเป็นส่วนตัว</b> — ทางร้านไม่ขอรหัสผ่าน ไม่เข้าถึงแชตหรือข้อมูลส่วนตัวอื่นๆ ใช้ LINE Login เพื่อยืนยันตัวตนเท่านั้น ไม่ใช่การเชื่อมบัญชีถาวรกับร้าน</p>
+
+    <button type="button" id="flowxConsentContinue">
+      ดำเนินการต่อ ♡
+    </button>
+    <button type="button" id="flowxConsentCancel">
+      ไว้ทีหลัง
+    </button>
+  </div>
+</div>
 </body>
 </html>
