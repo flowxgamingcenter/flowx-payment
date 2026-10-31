@@ -1348,6 +1348,21 @@ background-size: cover, cover, cover, 100% auto !important;
   color: #777;
   margin-top: 5px;
 }
+
+/* Mobile: separate the five-player cover from the review-form artwork. */
+@media (max-width:760px) {
+ .hero {
+  padding:calc(100vw * 849 / 1851 + 18px) 12px 30px !important;
+  background-color:#07132b;
+  background-image:linear-gradient(90deg,#07132b22,#07132b11),url("assets/FLOWX_review_background.png");
+  background-position:center top !important;
+  background-size:100% calc(100vw * 849 / 1851),100% auto !important;
+  background-repeat:no-repeat;
+ }
+ .heroContent {width:100%;min-width:0}
+ .content > * {min-width:0}
+ .formpanel {position:relative;top:auto}
+}
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
@@ -1582,6 +1597,29 @@ background-size: cover, cover, cover, 100% auto !important;
  </div>
 </footer>
 
+<div id="flowxConsentModal" class="flowx-consent-overlay" hidden>
+  <div class="flowx-consent-box" role="dialog" aria-modal="true"
+       aria-labelledby="flowxConsentTitle">
+    <h2 id="flowxConsentTitle">♡ ก่อนเข้าสู่ระบบ LINE</h2>
+
+    <p>FLOWX ขอใช้บัญชี LINE เพื่อยืนยันตัวตน ให้ทุกรีวิวน่าเชื่อถือและโปร่งใสน้า 💗</p>
+
+    <p>🎀 <b>ชื่อผู้รีวิว</b> — ใช้ชื่อ LINE จริงเท่านั้น ไม่สามารถเปลี่ยนเป็นชื่ออื่นได้</p>
+
+    <p>🧸 <b>รูปโปรไฟล์</b> — เลือกใช้รูป LINE หรืออวตาร์น่ารักๆ จากทางร้านได้เลย</p>
+
+    <p>🌷 <b>ข้อมูลที่เปิดเผย</b> — เมื่อส่งรีวิว ชื่อ LINE รูปที่เลือก คะแนน และข้อความรีวิวจะปรากฏต่อสาธารณะ ทุกคนสามารถมองเห็นได้</p>
+
+    <p>🔒 <b>ความเป็นส่วนตัว</b> — ทางร้านไม่ขอรหัสผ่าน ไม่เข้าถึงแชตหรือข้อมูลส่วนตัวอื่นๆ ใช้ LINE Login เพื่อยืนยันตัวตนเท่านั้น ไม่ใช่การเชื่อมบัญชีถาวรกับร้าน</p>
+
+    <button type="button" id="flowxConsentContinue">
+      ดำเนินการต่อ ♡
+    </button>
+    <button type="button" id="flowxConsentCancel">
+      ไว้ทีหลัง
+    </button>
+  </div>
+</div>
 <script>
 /* SUPABASE CONFIG — ใช้โปรเจกต์เดิม */
 const SUPABASE_URL = "https://gtngdpenvgluhplxharp.supabase.co";
@@ -1590,7 +1628,7 @@ const LIFF_ID = "2012241805-M9DSyAj1";
 
 const headers = {
  apikey: SUPABASE_KEY,
- Authorization: `Bearer ${SUPABASE_KEY}`,
+ 
  "Content-Type": "application/json"
 };
 
@@ -1671,7 +1709,7 @@ async function verifyLineLogin() {
       throw new Error("ไม่พบ LINE ID Token");
     }
 
-    const response = await fetch(
+    const response = await fetchWithTimeout(
       "https://gtngdpenvgluhplxharp.supabase.co/functions/v1/line-verify",
       {
         method: "POST",
@@ -1689,8 +1727,8 @@ async function verifyLineLogin() {
       throw new Error(result.error || "ยืนยันตัวตนไม่สำเร็จ");
     }
 
-    verifiedLineUser = result;
-const profile = await liff.getProfile();
+    const profile = await liff.getProfile();
+verifiedLineUser = result;
 
 document.getElementById("displayName").value =
   profile.displayName || "";
@@ -1699,6 +1737,7 @@ document.getElementById("displayName").value =
     button.disabled = true;
 
  } catch (error) {
+  verifiedLineUser = null;
   console.error("LINE verification error:", error);
 
   status.textContent =
@@ -1709,43 +1748,106 @@ document.getElementById("displayName").value =
 }
 
 const consentModal = document.getElementById("flowxConsentModal");
+const loginButton = document.getElementById("lineLoginBtn");
+const loginStatus = document.getElementById("lineLoginStatus");
+const continueButton = document.getElementById("flowxConsentContinue");
+const pendingKey = "flowx-line-consent-v1";
+let liffReady = null;
+let loginBusy = false;
 
-document.getElementById("lineLoginBtn").addEventListener("click", () => {
+async function fetchWithTimeout(url, options = {}) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 15000);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function initializeLine() {
+  if (liffReady) return liffReady;
+  liffReady = (async () => {
+    try {
+      if (!window.liff) throw new Error("โหลด LINE SDK ไม่สำเร็จ กรุณารีเฟรชหน้า");
+      await liff.init({ liffId: LIFF_ID, withLoginOnExternalBrowser: false });
+      loginStatus.textContent = "กดเข้าสู่ระบบ LINE เพื่อเริ่มเขียนรีวิว ♡";
+      let pending = 0;
+      try { pending = Number(sessionStorage.getItem(pendingKey)); } catch (_) {}
+      const age = Date.now() - pending;
+      // Resume only a login that the customer explicitly consented to in this tab.
+      if (pending > 0 && age >= 0 && age < 15 * 60 * 1000 && liff.isLoggedIn()) {
+        await verifyLineLogin();
+        if (verifiedLineUser) {
+          try { sessionStorage.removeItem(pendingKey); } catch (_) {}
+        }
+      }
+      return true;
+    } catch (error) {
+      console.error("LIFF initialization error:", error);
+      loginStatus.textContent = "เชื่อมต่อ LINE ไม่สำเร็จ: " + error.message;
+      return false;
+    }
+  })();
+  return liffReady;
+}
+
+function closeConsent() {
+  consentModal.hidden = true;
+  loginButton.focus();
+}
+
+loginButton.addEventListener("click", () => {
+  if (loginBusy || verifiedLineUser) return;
   consentModal.hidden = false;
+  continueButton.focus();
 });
 
 document.getElementById("flowxConsentCancel").addEventListener("click", () => {
-  consentModal.hidden = true;
+  closeConsent();
+  try { sessionStorage.removeItem(pendingKey); } catch (_) {}
 });
 
-document.getElementById("flowxConsentContinue").addEventListener("click", () => {
-  consentModal.hidden = true;
-
-  if (liff.isLoggedIn()) {
-    verifyLineLogin();
-  } else {
-    liff.login();
+document.addEventListener("keydown", event => {
+  if (consentModal.hidden) return;
+  if (event.key === "Escape" && !loginBusy) closeConsent();
+  if (event.key === "Tab") {
+    const cancel = document.getElementById("flowxConsentCancel");
+    if (event.shiftKey && document.activeElement === continueButton) {
+      event.preventDefault(); cancel.focus();
+    } else if (!event.shiftKey && document.activeElement === cancel) {
+      event.preventDefault(); continueButton.focus();
+    }
   }
 });
 
+continueButton.addEventListener("click", async () => {
+  if (loginBusy) return;
+  loginBusy = true;
+  continueButton.disabled = true;
+  loginStatus.textContent = "กำลังเชื่อมต่อ LINE...";
+  try {
+    if (!await initializeLine()) {
+      liffReady = null;
+      return;
+    }
+    if (liff.isLoggedIn()) {
+      await verifyLineLogin();
+    } else {
+      // If this cannot be saved, keep the dialog open instead of losing consent on redirect.
+      sessionStorage.setItem(pendingKey, String(Date.now()));
+      liff.login({ redirectUri: window.location.origin + window.location.pathname });
+    }
+    closeConsent();
+  } catch (error) {
+    console.error("LINE login error:", error);
+    loginStatus.textContent = "เข้าสู่ระบบไม่สำเร็จ: " + error.message;
+  } finally {
+    loginBusy = false;
+    continueButton.disabled = false;
+  }
+});
 
-
-liff.init({
-  liffId: LIFF_ID,
-  withLoginOnExternalBrowser: true
-})
-  .then(() => {
-  // ไม่ตรวจสอบ LINE อัตโนมัติเมื่อเปิดเว็บ
-  // ลูกค้าต้องกดปุ่มและอ่านข้อความแจ้งก่อน
-
-  document.getElementById("lineLoginStatus").textContent =
-    "กดเข้าสู่ระบบ LINE เพื่อเริ่มเขียนรีวิว ♡";
-})
-  .catch(error => {
-    console.error("LIFF initialization error:", error);
-    document.getElementById("lineLoginStatus").textContent =
-      "ไม่สามารถเชื่อมต่อ LINE ได้";
-  });
 
 function safeText(value){
  return String(value ?? "").replace(/[&<>"']/g, c => ({
@@ -1790,7 +1892,7 @@ function renderReviews(){
  }
 
  list.innerHTML = filtered.map(review => {
-  const rating = Math.max(0,Math.min(5,Number(review.rating)||0));
+  const rating = Math.round(Math.max(0,Math.min(5,Number(review.rating)||0)));
   return `
    <article class="review">
     <div class="reviewBanner">
@@ -1823,13 +1925,14 @@ function renderReviews(){
     </div>
    </article>`;
  }).join("");
+ applySketchFrames();
 }
 
 async function loadReviews(){
  list.innerHTML='<div class="empty">กำลังโหลดรีวิว...</div>';
 
  try{
-  const response = await fetch(
+  const response = await fetchWithTimeout(
   `${SUPABASE_URL}/rest/v1/reviews?select=id,display_name,game,rating,review_text,created_at,line_user_id,line_picture_url,avatar_type,avatar_key,avatar_url&order=created_at.desc&limit=200`,
    {headers}
   );
@@ -1839,7 +1942,9 @@ async function loadReviews(){
    throw new Error(message);
   }
 
-  allReviews = await response.json();
+  const rows = await response.json();
+  if (!Array.isArray(rows)) throw new Error("รูปแบบข้อมูลรีวิวไม่ถูกต้อง");
+  allReviews = rows;
 
   const count = allReviews.length;
   const average = count
@@ -1954,7 +2059,7 @@ document.getElementById("reviewForm").addEventListener("submit", async event => 
   statusBox.textContent = "กำลังส่งรีวิว...";
 
   try {
-    const response = await fetch(
+    const response = await fetchWithTimeout(
       `${SUPABASE_URL}/functions/v1/line-submit-review`,
       {
         method: "POST",
@@ -1980,6 +2085,7 @@ avatar_key: selectedAvatar || null
     }
 
     document.getElementById("reviewForm").reset();
+    document.getElementById("displayName").value = displayName;
     selectedRating = 0;
     selectedAvatar = "";
 
@@ -2050,40 +2156,12 @@ function applySketchFrames() {
 }
 
 /* รองรับรีวิวที่โหลดใหม่จาก Supabase */
-const sketchObserver = new MutationObserver(() => {
-  applySketchFrames();
-});
 
-sketchObserver.observe(
-  document.getElementById("reviewList"),
-  { childList: true }
-);
 
 applySketchFrames();
 loadReviews();
+initializeLine();
+
 </script>
-<div id="flowxConsentModal" class="flowx-consent-overlay" hidden>
-  <div class="flowx-consent-box" role="dialog" aria-modal="true"
-       aria-labelledby="flowxConsentTitle">
-    <h2 id="flowxConsentTitle">♡ ก่อนเข้าสู่ระบบ LINE</h2>
-
-    <p>FLOWX ขอใช้บัญชี LINE เพื่อยืนยันตัวตน ให้ทุกรีวิวน่าเชื่อถือและโปร่งใสน้า 💗</p>
-
-    <p>🎀 <b>ชื่อผู้รีวิว</b> — ใช้ชื่อ LINE จริงเท่านั้น ไม่สามารถเปลี่ยนเป็นชื่ออื่นได้</p>
-
-    <p>🧸 <b>รูปโปรไฟล์</b> — เลือกใช้รูป LINE หรืออวตาร์น่ารักๆ จากทางร้านได้เลย</p>
-
-    <p>🌷 <b>ข้อมูลที่เปิดเผย</b> — เมื่อส่งรีวิว ชื่อ LINE รูปที่เลือก คะแนน และข้อความรีวิวจะปรากฏต่อสาธารณะ ทุกคนสามารถมองเห็นได้</p>
-
-    <p>🔒 <b>ความเป็นส่วนตัว</b> — ทางร้านไม่ขอรหัสผ่าน ไม่เข้าถึงแชตหรือข้อมูลส่วนตัวอื่นๆ ใช้ LINE Login เพื่อยืนยันตัวตนเท่านั้น ไม่ใช่การเชื่อมบัญชีถาวรกับร้าน</p>
-
-    <button type="button" id="flowxConsentContinue">
-      ดำเนินการต่อ ♡
-    </button>
-    <button type="button" id="flowxConsentCancel">
-      ไว้ทีหลัง
-    </button>
-  </div>
-</div>
 </body>
 </html>
