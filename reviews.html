@@ -834,6 +834,7 @@ footer strong{font-family:Orbitron,sans-serif;color:#75eaff}
 }
 
 /* ภาพเดียวต่อเนื่องจากเหนือกรอบลงไปด้านใน */
+
 .formpanel::before {
   content: "";
   position: absolute;
@@ -841,20 +842,23 @@ footer strong{font-family:Orbitron,sans-serif;color:#75eaff}
   right: 0;
   top: -130px;
   bottom: 0;
-  z-index: -1;
+  z-index: 0;
   pointer-events: none;
 
-  background:
+  background-image:
     linear-gradient(
       to bottom,
       transparent 0%,
-      transparent 12%,
-      rgba(7,19,45,.45) 30%,
-      rgba(7,19,45,.85) 60%,
-      #07132d 100%
+      rgba(7,19,45,.08) 20%,
+      rgba(7,19,45,.30) 40%,
+      rgba(7,19,45,.70) 65%,
+      #07132d 90%
     ),
-    url("assets/โปสเตอร์ Blue Lock โทนสีน้ำเงินเข้ม.png")
-      center top / 100% auto no-repeat;
+    url("assets/โปสเตอร์ Blue Lock โทนสีน้ำเงินเข้ม.png");
+
+  background-position: center top, center top;
+  background-size: 100% 100%, 100% auto;
+  background-repeat: no-repeat;
 }
 
 /* เนื้อหาอยู่เหนือภาพ */
@@ -1283,6 +1287,55 @@ background-size: cover, cover, cover, 100% auto !important;
   display: none !important;
 }
 
+/* FLOWX — MOBILE RESPONSIVE IMAGES */
+@media (max-width: 760px) {
+
+  /* รูปปก: แสดงภาพครบ ไม่ยืด ไม่ตัด */
+  .hero {
+    background-image:
+      linear-gradient(
+        to bottom,
+        rgba(7,19,45,.08),
+        rgba(7,19,45,.30)
+      ),
+      url("assets/FLOWX_review_background.png") !important;
+
+    background-size:
+      100% 100%,
+      100% auto !important;
+
+    background-position:
+      center top,
+      center top !important;
+
+    background-repeat: no-repeat !important;
+    background-color: #07132d;
+  }
+
+  /* รูปเหนือกรอบเขียนรีวิว */
+  .formpanel::before {
+    background-image:
+      linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(7,19,45,.15) 40%,
+        #07132d 100%
+      ),
+      url("assets/โปสเตอร์ Blue Lock โทนสีน้ำเงินเข้ม.png") !important;
+
+    background-size:
+      100% 100%,
+      100% auto !important;
+
+    background-position:
+      center top,
+      center top !important;
+
+    background-repeat: no-repeat !important;
+    z-index: 0;
+  }
+}
+
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
@@ -1646,7 +1699,11 @@ document.getElementById("lineLoginBtn").addEventListener("click", () => {
   }
 });
 
-liff.init({ liffId: LIFF_ID })
+
+liff.init({
+  liffId: LIFF_ID,
+  withLoginOnExternalBrowser: true
+})
   .then(() => {
     if (liff.isLoggedIn()) {
       verifyLineLogin();
