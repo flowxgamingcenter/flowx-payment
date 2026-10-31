@@ -795,20 +795,45 @@ footer strong{font-family:Orbitron,sans-serif;color:#75eaff}
 
 /* FLOWX — UNIFIED WRITE REVIEW FRAME */
 
+
 .formpanel {
   position: sticky;
   top: 82px;
   isolation: isolate;
   overflow: visible;
-  border: none;
-  border-radius: 30px;
   padding: 24px;
+  border: 2px solid transparent;
+  border-radius: 30px 26px 32px 28px;
+
   background:
-    radial-gradient(circle at 90% 0%,
-      #a04cce20, transparent 48%),
-    linear-gradient(145deg,#07132d,#0b1d43);
+    linear-gradient(
+      145deg,
+      rgba(7,19,45,.80),
+      rgba(12,28,65,.84) 55%,
+      rgba(7,17,43,.90)
+    ) padding-box,
+
+    url("assets/โปสเตอร์ Blue Lock โทนสีน้ำเงินเข้ม.png")
+      center top / cover no-repeat padding-box,
+
+    linear-gradient(
+      135deg,
+      #6ee7ff 0%,
+      #728fff 45%,
+      #a98aff 82%,
+      #f49ad2 100%
+    ) border-box;
+
   color: #eaf7ff;
-  box-shadow: none;
+  backdrop-filter: blur(16px) saturate(125%);
+  -webkit-backdrop-filter: blur(16px) saturate(125%);
+
+  box-shadow:
+    0 24px 48px rgba(0, 5, 25, .62),
+    0 0 24px rgba(66, 175, 255, .20),
+    0 0 38px rgba(145, 101, 255, .12),
+    inset 0 1px 0 rgba(255, 255, 255, .34),
+    inset 0 0 24px rgba(107, 177, 255, .08);
 }
 
 /* หัวป้ายและฟอร์มอยู่ในกรอบเดียว */
@@ -1216,6 +1241,11 @@ background-size: cover, cover, cover, 100% auto !important;
 }
 
 } /* ปิด @media มือถือ */
+
+/* FLOWX — REMOVE OLD FORM FRAME */
+.formpanel > .sketchFrame {
+  display: none !important;
+}
 
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
