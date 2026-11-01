@@ -1358,8 +1358,36 @@ background-size: cover, cover, cover, 100% auto !important;
 }
 
 .formpanel select option {background:#102449;color:#eaf7ff}
+/* New review-card additions only. Approved hero, scene and glass styles are unchanged. */
+.reviewBanner .gameBrand {min-width:0;display:flex;flex-direction:column;gap:3px;align-items:flex-start;max-width:calc(100% - 70px)}
+.gameLogo {display:block;width:130px;max-width:100%;height:35px;object-fit:contain;object-position:left center}
+.gameLogoMono {filter:brightness(0) invert(1)}
+.gameLogo[hidden] {display:none}
+.reviewBanner .gameBrand strong {font-size:13px}
+.review:has(.reviewChibi) .reviewBody {padding-top:24px;border-top:1px solid #6cdfff66}
+.review:has(.reviewChibi) .reviewTop {padding-right:78px;min-height:48px;flex-wrap:wrap}
+.reviewChibi {position:absolute!important;right:8px;width:72px;overflow:hidden;z-index:3!important;pointer-events:none;filter:drop-shadow(0 3px 3px #0006)}
+.approvedReviewPhotos {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:12px 0 4px}
+.approvedReviewPhotos a {min-width:0;aspect-ratio:1;border-radius:8px;overflow:hidden;border:1px solid #6cdfff77;background:#0b2145}
+.approvedReviewPhotos img {width:100%;height:100%;display:block;object-fit:cover}
+.approvedReviewPhotos [hidden] {display:none}
+.reviewPhotoField {border:1px solid #65cfff66;background:#10244955;border-radius:12px;padding:12px;margin:14px 0;color:#dff3ff}
+.reviewPhotoField>label {font-weight:600;font-size:13px;display:flex;justify-content:space-between;gap:8px}
+.reviewPhotoField input[type=file] {width:100%;font-size:12px;margin:10px 0;color:#dff3ff}
+.reviewPhotoField small {display:block;line-height:1.7;color:#c3d7ef;font-size:11px}
+.selectedReviewPhotos {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.selectedReviewPhoto {min-width:0;position:relative;aspect-ratio:1}
+.selectedReviewPhoto img {width:100%;height:100%;object-fit:cover;border-radius:8px}
+.selectedReviewPhoto button {position:absolute;right:3px;bottom:3px;background:#07132be8;color:#fff;border:1px solid #ff9ad0;border-radius:8px;font-size:11px;padding:2px 7px}
+.photoRightsRow {font-size:11px;line-height:1.7;display:flex;align-items:flex-start;gap:7px;margin:10px 0 0}
+.photoRightsRow input {margin-top:4px;flex:none;width:15px;height:15px}
+.photoRightsRow[hidden] {display:none}
+.reviewPhotoField #reviewPhotoNote {margin-top:7px}
+@media(max-width:480px){.gameLogo{width:140px}.reviewChibi{right:10px}}
+
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<script src="flowx-chibi-data.js" defer></script>
 </head>
 
 <body>
@@ -1563,6 +1591,14 @@ background-size: cover, cover, cover, 100% auto !important;
 
   </div>
 
+<section class="reviewPhotoField" aria-label="รูปประกอบรีวิว">
+ <label for="reviewPhotos">แนบรูปประกอบ (ไม่บังคับ)<span id="reviewPhotoCount">0/3</span></label>
+ <input type="file" id="reviewPhotos" accept="image/jpeg,image/png,image/webp" multiple disabled aria-describedby="reviewPhotoNote">
+ <small>สูงสุด 3 รูป · JPG, PNG, WebP · รูปละไม่เกิน 5 MB</small>
+ <div id="selectedReviewPhotos" class="selectedReviewPhotos"></div>
+ <label id="photoRightsRow" class="photoRightsRow" hidden><input type="checkbox" id="photoRights"><span>ฉันมีสิทธิ์เผยแพร่รูปเหล่านี้ ได้รับความยินยอมจากผู้ที่ปรากฏในรูป และรูปไม่มีความรุนแรง ภาพโป๊ เนื้อหาส่อทางเพศหรือ 18+ รวมถึงข้อมูลส่วนตัวของผู้อื่น</span></label>
+ <small id="reviewPhotoNote" role="status" aria-live="polite">กำลังตรวจสอบระบบแนบรูป…</small>
+</section>
   <p class="formnote">
     กรุณาเขียนรีวิวตามประสบการณ์จริง
     ห้ามใส่รหัสผ่านหรือข้อมูลบัญชีส่วนตัว
@@ -1590,7 +1626,7 @@ background-size: cover, cover, cover, 100% auto !important;
 <footer>
  <div class="container">
   <strong>FLOWX GAMING CENTER</strong><br>
-  STAY ON FLOW · PLAY YOUR GAME.
+  STAY ON FLOW · PLAY YOUR GAME.<br><a href="flowx-credits.html">เครดิตภาพและโลโก้เกม</a>
  </div>
 </footer>
 
@@ -1618,6 +1654,7 @@ background-size: cover, cover, cover, 100% auto !important;
   </div>
 </div>
 <script>
+
 /* SUPABASE CONFIG — ใช้โปรเจกต์เดิม */
 const SUPABASE_URL = "https://gtngdpenvgluhplxharp.supabase.co";
 const SUPABASE_KEY = "sb_publishable_r-r1G1EBpWCmhZHrS_ocXg__iQQAINV";
@@ -1635,6 +1672,144 @@ let allReviews = [];
 const list = document.getElementById("reviewList");
 const statusBox = document.getElementById("status");
 let verifiedLineUser = null;
+/* Additional features; the existing LINE flow remains the authentication source. */
+const MEDIA_ROOT = SUPABASE_URL + '/functions/v1/';
+const CHIBI_IDS = ['isagi','bachira','rin','chigiri','barou','reo','nagi','sae','kaiser','yukimiya','shidou','otoya','aiku','gagamaru','karasu'];
+const CHIBI_NAMES = ['Isagi Yoichi','Bachira Meguru','Itoshi Rin','Chigiri Hyoma','Barou Shoei','Mikage Reo','Nagi Seishiro','Itoshi Sae','Michael Kaiser','Yukimiya Kenyu','Shidou Ryusei','Otoya Eita','Oliver Aiku','Gagamaru Gin','Karasu Tabito'];
+const GAME_LOGOS = {"RoV":{"src":"https://cdn-webth.garenanow.com/webth/rov/mainsite/v2/logo_rov.png"},"Free Fire":{"src":"https://cdn.wildflamestudio.com/common/web_event/official2.ff.garena.all/202310/c118533702026f510a7a035cd91df64f.png"},"Mobile Legends":{"src":"https://upload.wikimedia.org/wikipedia/commons/1/12/Mobile_Legends_Logo.webp"},"PUBG Mobile":{"src":"https://upload.wikimedia.org/wikipedia/commons/4/43/PUBG_Mobile_simple_logo_black.png","monochrome":true},"Roblox":{"src":"https://upload.wikimedia.org/wikipedia/commons/4/4b/Roblox_Logo_2022.svg","monochrome":true},"Heartopia":{"src":"data:image/webp;base64,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"},"VALORANT":{"src":"https://upload.wikimedia.org/wikipedia/commons/f/fc/Valorant_logo_-_pink_color_version.svg"}};
+const reviewExtras = new Map();
+let mediaReady = false;
+let mediaSending = false;
+let photoPreparing = false;
+let selectedReviewPhotos = [];
+let uploadBatch = null;
+let extrasRequest = 0;
+
+function gameLogoMarkup(game) {
+ const entry=GAME_LOGOS[game];
+ return entry?`<img class="gameLogo ${entry.monochrome?'gameLogoMono':''}" src="${safeText(entry.src)}" alt="โลโก้ ${safeText(game)}" referrerpolicy="no-referrer" onerror="this.hidden=true">`:'';
+}
+function chibiMarkup(review) {
+ const variant=reviewExtras.get(String(review.id))?.variant;
+ if(!Number.isInteger(variant)||variant<0||variant>=75)return '';
+ const character=Math.floor(variant/5),pose=variant%5;
+ const sheet=window.FLOWX_CHIBI_SHEETS?.[CHIBI_IDS[character]];
+ const frame=window.FLOWX_CHIBI_FRAMES?.[CHIBI_IDS[character]]?.[pose];
+ if(!sheet||!frame)return '';
+ const height=Math.min(96,72*frame.box[3]/frame.box[2]);
+ return `<svg class="reviewChibi" data-character="${CHIBI_IDS[character]}" data-pose="${pose}" role="img" aria-label="${CHIBI_NAMES[character]} ประดับขอบรีวิว" viewBox="${frame.box.join(' ')}" preserveAspectRatio="xMidYMax meet" style="height:${height}px;top:${-height*frame.anchor}px"><image href="${sheet}" width="${frame.source[0]}" height="${frame.source[1]}"/></svg>`;
+}
+function approvedPhotosMarkup(review) {
+ const photos=(reviewExtras.get(String(review.id))?.photos||[]).filter(p=>/^[0-9a-f-]{36}$/i.test(p.id)).slice(0,3);
+ if(!photos.length)return '';
+ return `<div class="approvedReviewPhotos" aria-label="รูปประกอบที่ร้านอนุมัติแล้ว">${photos.map((p,i)=>{
+  const url=MEDIA_ROOT+'review-photo-public?id='+encodeURIComponent(p.id);
+  return `<a href="${url}" target="_blank" rel="noopener noreferrer"><img src="${url}" alt="รูปประกอบรีวิว ${i+1}" loading="lazy" onerror="this.closest('a').hidden=true"></a>`;
+ }).join('')}</div>`;
+}
+async function loadReviewExtras(ids) {
+ const request=++extrasRequest;
+ const clean=ids.map(String).filter(id=>/^[a-zA-Z0-9-]{1,64}$/.test(id));
+ if(!clean.length)return;
+ try{
+  const response=await fetchWithTimeout(MEDIA_ROOT+'review-media?review_ids='+encodeURIComponent(clean.join(',')),{headers:{apikey:SUPABASE_KEY}});
+  if(!response.ok)return;
+  const data=await response.json();
+  if(request!==extrasRequest)return;
+  const next=new Map(clean.map(id=>[id,{photos:[]}]));
+  for(const d of data.decorations||[]){if(next.has(String(d.review_id))&&Number.isInteger(d.variant)&&d.variant>=0&&d.variant<75)next.get(String(d.review_id)).variant=d.variant;}
+  for(const p of data.photos||[]){if(next.has(String(p.review_id)))next.get(String(p.review_id)).photos.push({id:p.id});}
+  reviewExtras.clear();for(const [id,value]of next)reviewExtras.set(id,value);
+  renderReviews();
+ }catch(error){console.warn('Review extras unavailable:',error.name);}
+}
+function mediaNote(text) {document.getElementById('reviewPhotoNote').textContent=text;}
+function renderSelectedPhotos() {
+ const area=document.getElementById('selectedReviewPhotos');area.replaceChildren();
+ selectedReviewPhotos.forEach((photo,index)=>{
+  const item=document.createElement('div');item.className='selectedReviewPhoto';
+  const img=document.createElement('img');img.src=photo.preview;img.alt='รูปแนบ '+(index+1);
+  const button=document.createElement('button');button.type='button';button.textContent='ลบ';button.disabled=mediaSending;
+  button.setAttribute('aria-label','ลบรูปแนบ '+(index+1));
+  button.addEventListener('click',()=>{
+   if(mediaSending)return;URL.revokeObjectURL(photo.preview);selectedReviewPhotos.splice(index,1);uploadBatch=null;renderSelectedPhotos();
+  });item.append(img,button);area.append(item);
+ });
+ document.getElementById('photoRightsRow').hidden=!selectedReviewPhotos.length;
+ document.getElementById('reviewPhotoCount').textContent=selectedReviewPhotos.length+'/3';
+}
+function setMediaSending(value) {
+ mediaSending=value;
+ document.getElementById('reviewPhotos').disabled=value||!mediaReady;
+ document.getElementById('photoRights').disabled=value;
+ document.querySelectorAll('#selectedReviewPhotos button').forEach(b=>b.disabled=value);
+}
+function clearReviewPhotos() {
+ selectedReviewPhotos.forEach(p=>URL.revokeObjectURL(p.preview));selectedReviewPhotos=[];uploadBatch=null;
+ document.getElementById('reviewPhotos').value='';document.getElementById('photoRights').checked=false;renderSelectedPhotos();
+}
+async function prepareReviewPhoto(file) {
+ if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw Error('รองรับเฉพาะ JPG, PNG และ WebP');
+ if(file.size>5*1024*1024)throw Error('แต่ละรูปต้องมีขนาดไม่เกิน 5 MB');
+ const bitmap=await createImageBitmap(file);
+ try{
+  const scale=Math.min(1,1600/Math.max(bitmap.width,bitmap.height));
+  const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));
+  const context=canvas.getContext('2d');if(!context)throw Error('อ่านภาพไม่สำเร็จ');
+  context.fillStyle='#fff';context.fillRect(0,0,canvas.width,canvas.height);context.drawImage(bitmap,0,0,canvas.width,canvas.height);
+  const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.85));
+  if(!blob || blob.size>3*1024*1024)throw Error('รูปใหญ่เกินไป กรุณาเลือกรูปอื่น');
+  return {blob,preview:URL.createObjectURL(blob)};
+ }finally{bitmap.close();}
+}
+async function mediaJson(path,body) {
+ const response=await fetchWithTimeout(MEDIA_ROOT+path,{method:'POST',headers:{apikey:SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
+ const result=await response.json();if(!response.ok)throw Error(result.error||'ดำเนินการไม่สำเร็จ');return result;
+}
+async function submitReviewRequest(payload) {
+ if(!selectedReviewPhotos.length)return fetchWithTimeout(SUPABASE_URL+'/functions/v1/line-submit-review',{
+  method:'POST',headers:{'Content-Type':'application/json',apikey:SUPABASE_KEY},body:JSON.stringify(payload)});
+ if(!mediaReady)throw Error('ระบบแนบรูปยังไม่พร้อม กรุณาลองใหม่');
+ if(!document.getElementById('photoRights').checked)throw Error('กรุณายืนยันสิทธิ์และเงื่อนไขของรูปประกอบ');
+ setMediaSending(true);
+ if(!uploadBatch){
+  const batch=await mediaJson('review-media',{action:'begin',idToken:payload.idToken});uploadBatch={id:batch.batch_id,uploaded:false};
+ }
+ if(!uploadBatch.uploaded){
+  try{
+   for(let slot=0;slot<selectedReviewPhotos.length;slot++){
+    statusBox.textContent=`กำลังอัปโหลดรูป ${slot+1}/${selectedReviewPhotos.length}…`;
+    const form=new FormData();form.set('idToken',payload.idToken);form.set('batch_id',uploadBatch.id);form.set('slot',String(slot));form.set('file',selectedReviewPhotos[slot].blob,'review.jpg');
+    const response=await fetchWithTimeout(MEDIA_ROOT+'review-media',{method:'POST',headers:{apikey:SUPABASE_KEY},body:form});
+    const result=await response.json();if(!response.ok)throw Error(result.error||'อัปโหลดรูปไม่สำเร็จ');
+   }
+   uploadBatch.uploaded=true;
+  }catch(error){uploadBatch=null;throw error;}
+ }
+ statusBox.textContent='กำลังบันทึกรีวิว…';
+ // Preserve the batch on an uncertain final response: retrying is idempotent on the server.
+ return fetchWithTimeout(MEDIA_ROOT+'review-submit-media',{method:'POST',headers:{apikey:SUPABASE_KEY,'Content-Type':'application/json'},
+ body:JSON.stringify({...payload,batch_id:uploadBatch.id,rights_confirmed:true})});
+}
+async function initializeReviewEnhancements() {
+ document.getElementById('reviewPhotos').addEventListener('change',async event=>{
+  if(mediaSending||photoPreparing)return;
+  const files=[...event.target.files];event.target.value='';
+  if(selectedReviewPhotos.length+files.length>3){mediaNote('แนบรูปได้ไม่เกิน 3 รูป กรุณาลบรูปเดิมก่อน');return;}
+  photoPreparing=true;document.getElementById('submitBtn').disabled=true;
+  const prepared=[];
+  try{for(const file of files)prepared.push(await prepareReviewPhoto(file));selectedReviewPhotos.push(...prepared);uploadBatch=null;renderSelectedPhotos();mediaNote('รูปประกอบจะยังไม่แสดง จนกว่าร้านจะตรวจและอนุมัติ');}
+  catch(error){prepared.forEach(p=>URL.revokeObjectURL(p.preview));mediaNote(error.message);}
+  finally{photoPreparing=false;document.getElementById('submitBtn').disabled=false;}
+ });
+ window.addEventListener('flowx-chibi-ready',()=>{if(allReviews.length)renderReviews();});
+ try{
+  const response=await fetchWithTimeout(MEDIA_ROOT+'review-media?action=health',{headers:{apikey:SUPABASE_KEY}});
+  if(response.ok && (await response.json()).ready===true){mediaReady=true;document.getElementById('reviewPhotos').disabled=false;mediaNote('แนบได้สูงสุด 3 รูป รูปจะแสดงหลังร้านอนุมัติเท่านั้น');return;}
+ }catch{}
+ mediaNote('ระบบแนบรูปยังไม่เปิดใช้งาน ส่งข้อความรีวิวได้ตามปกติ');
+}
+
 /* FLOWX AVATAR SELECTOR */
 const avatarCharacters = [
   "gagamaru",
@@ -1893,12 +2068,11 @@ function renderReviews(){
   return `
    <article class="review">
     <div class="reviewBanner">
-     <div>${safeText(review.game)}
-      <small>FLOWX PLAYER REVIEW</small>
-     </div>
-     <span>⚽</span>
+     <div class="gameBrand">${gameLogoMarkup(review.game)}<strong>${safeText(review.game)}</strong><small>FLOWX PLAYER REVIEW</small></div>
+
     </div>
     <div class="reviewBody">
+     ${chibiMarkup(review)}
      <div class="reviewTop">
     <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;">
   <img
@@ -1916,6 +2090,7 @@ function renderReviews(){
      </div>
      <div class="reviewStars">${"★".repeat(rating)}${"☆".repeat(5-rating)}</div>
      <div class="reviewText">${safeText(review.review_text)}</div>
+     ${approvedPhotosMarkup(review)}
      <div class="reviewDate">
       <span>${dateLabel(review.created_at)}</span><span>♥</span>
      </div>
@@ -1952,6 +2127,7 @@ async function loadReviews(){
 document.getElementById("average").textContent = average;
 document.getElementById("averageIcon").textContent = average;
 renderReviews();
+void loadReviewExtras(allReviews.map(review=>review.id));
 
  }catch(error){
   console.error("Supabase load error:",error);
@@ -2024,6 +2200,7 @@ document.getElementById("sortReviews").addEventListener("change",renderReviews);
 /* SUBMIT REVIEW */
 document.getElementById("reviewForm").addEventListener("submit", async event => {
   event.preventDefault();
+  if(mediaSending||photoPreparing)return;
 
   const displayName = document.getElementById("displayName").value.trim();
   const game = document.getElementById("game").value;
@@ -2056,24 +2233,10 @@ document.getElementById("reviewForm").addEventListener("submit", async event => 
   statusBox.textContent = "กำลังส่งรีวิว...";
 
   try {
-    const response = await fetchWithTimeout(
-      `${SUPABASE_URL}/functions/v1/line-submit-review`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "apikey": SUPABASE_KEY
-        },
-        body: JSON.stringify({
-          idToken: idToken,
-          game: game,
-          rating: selectedRating,
-          review_text: reviewText,
-          avatar_type: selectedAvatar ? "flowx" : "line",
-avatar_key: selectedAvatar || null
-        })
-      }
-    );
+    const response = await submitReviewRequest({
+      idToken, game, rating:selectedRating, review_text:reviewText,
+      avatar_type:selectedAvatar?'flowx':'line', avatar_key:selectedAvatar||null
+    });
 
     const result = await response.json();
 
@@ -2082,6 +2245,7 @@ avatar_key: selectedAvatar || null
     }
 
     document.getElementById("reviewForm").reset();
+    clearReviewPhotos();
     document.getElementById("displayName").value = displayName;
     selectedRating = 0;
     selectedAvatar = "";
@@ -2097,7 +2261,7 @@ avatar_key: selectedAvatar || null
       item.classList.remove("selected");
     });
 
-    statusBox.textContent = "ส่งรีวิวสำเร็จแล้ว ขอบคุณที่ร่วมแบ่งปันนะ! 💗";
+    statusBox.textContent = result.photos_pending ? "ส่งรีวิวแล้ว รูปประกอบรอร้านตรวจและอนุมัติก่อนแสดง 💗" : "ส่งรีวิวสำเร็จแล้ว ขอบคุณที่ร่วมแบ่งปันนะ! 💗";
 
     await loadReviews();
 
@@ -2106,6 +2270,7 @@ avatar_key: selectedAvatar || null
     statusBox.textContent = "ส่งรีวิวไม่สำเร็จ: " + error.message;
   } finally {
     submitButton.disabled = false;
+    setMediaSending(false);
   }
 });
 
@@ -2158,6 +2323,7 @@ function applySketchFrames() {
 applySketchFrames();
 loadReviews();
 initializeLine();
+void initializeReviewEnhancements();
 
 </script>
 </body>
