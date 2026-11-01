@@ -1,0 +1,86 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FLOWX — ตรวจรูปรีวิว</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#061126;color:#edf6ff;font:16px/1.65 system-ui,sans-serif}header{border-bottom:1px solid #6cdbff55;background:#07132b;padding:16px 5%;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}main{max-width:1100px;margin:25px auto;padding:0 20px}h1{font-size:24px;margin:0}h2{font-size:18px;margin:0 0 10px}button,input,select,textarea{font:inherit}button{border:1px solid #63dfff88;background:#12396a;color:#fff;border-radius:10px;padding:9px 15px;cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}input,textarea,select{background:#0d2449;color:#fff;border:1px solid #619bcd;border-radius:9px;padding:10px}input[type=email]{max-width:100%;width:350px}textarea{width:100%;min-height:65px;margin:10px 0}a{color:#8be8ff}#status{min-height:28px;color:#9aeaff}.login,.notice{border:1px solid #62dfff66;border-radius:15px;padding:20px;background:#0c2144;margin-bottom:20px}.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:20px 0}.queue{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.photoCard{border:1px solid #76dfff77;border-radius:16px;background:#0b1e40;padding:16px;min-width:0}.photoCard img{width:100%;height:270px;object-fit:contain;background:#050d20;border-radius:10px;display:block}.reviewCopy{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;color:#c0d3ee;max-height:140px;overflow:auto}.checks label{display:flex;align-items:flex-start;gap:8px;font-size:13px;margin:8px 0}.checks input{margin-top:5px;flex:none}.actions{display:flex;gap:8px}.approve{background:#0b674e}.reject{background:#73334e}.muted{color:#a9bfdd;font-size:13px}[hidden]{display:none!important}@media(max-width:650px){.queue{grid-template-columns:1fr}}
+</style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script></head><body>
+<header><h1>FLOWX · ตรวจรูปประกอบรีวิว</h1><a href="reviews.html">กลับหน้ารีวิว</a></header><main>
+<section id="loginPanel" class="login"><h2>เข้าสู่ระบบร้าน</h2><p>ใช้บัญชีอีเมลที่ได้รับสิทธิ์จากร้านเท่านั้น</p><form id="loginForm"><label for="email">อีเมลร้าน</label><br><input id="email" type="email" autocomplete="email" required><button id="loginButton">ส่งลิงก์เข้าสู่ระบบ</button></form></section>
+<div id="status" role="status" aria-live="polite"></div>
+<section id="adminPanel" hidden><p>เข้าสู่ระบบเป็น <strong id="actorEmail"></strong> <button id="signOut">ออกจากระบบ</button></p>
+<div class="notice">ตรวจรูปทุกครั้งก่อนอนุมัติ: ผู้ส่งมีสิทธิ์เผยแพร่และได้รับความยินยอม ไม่มีความรุนแรง ไม่มีภาพโป๊ เนื้อหาส่อทางเพศหรือ 18+ และไม่มีข้อมูลส่วนตัวที่ไม่ควรเปิดเผย หากตรวจสอบไม่ได้ ให้ปฏิเสธหรือคงสถานะรอตรวจไว้</div>
+<div class="toolbar"><label for="queueState">สถานะ</label><select id="queueState"><option value="pending">รอตรวจ</option><option value="approved">อนุมัติแล้ว</option><option value="rejected">ปฏิเสธแล้ว</option></select><button id="refresh">โหลดคิวใหม่</button><span id="count" class="muted"></span></div>
+<div id="queue" class="queue"></div><div class="toolbar"><button id="previous">ก่อนหน้า</button><span id="pageNumber"></span><button id="next">ถัดไป</button></div>
+</section></main>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+ const PROJECT="https://gtngdpenvgluhplxharp.supabase.co",PUBLIC_KEY="sb_publishable_r-r1G1EBpWCmhZHrS_ocXg__iQQAINV",ROOT=PROJECT+'/functions/v1/review-photo-admin';
+ const status=document.getElementById('status'),queue=document.getElementById('queue');
+ let client,session=null,photos=[],reviews=new Map(),pageIndex=0,generation=0,imageUrls=[],loading=false;
+ const say=message=>status.textContent=message;
+ const cleanImages=()=>{imageUrls.forEach(URL.revokeObjectURL);imageUrls=[];};
+ const node=(tag,text,className)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(className)e.className=className;return e;};
+ async function request(path='',options={}){
+  const {data}=await client.auth.getSession();session=data.session;
+  if(!session)throw Error('กรุณาเข้าสู่ระบบร้าน');
+  const response=await fetch(ROOT+path,{...options,headers:{apikey:PUBLIC_KEY,Authorization:'Bearer '+session.access_token,...options.headers},signal:AbortSignal.timeout(20000)});
+  if(!response.ok){let message='ดำเนินการไม่สำเร็จ';try{message=(await response.json()).error||message;}catch{}throw Error(message);}return response;
+ }
+ async function renderQueue(){
+  const current=++generation;cleanImages();queue.replaceChildren();
+  const start=pageIndex*10,visible=photos.slice(start,start+10);
+  document.getElementById('previous').disabled=pageIndex===0;document.getElementById('next').disabled=start+10>=photos.length;
+  document.getElementById('pageNumber').textContent=photos.length?'หน้า '+(pageIndex+1)+' / '+Math.ceil(photos.length/10):'';
+  document.getElementById('count').textContent=photos.length+' รูป (สูงสุด 100 รูปต่อคิว)';
+  if(!visible.length){queue.append(node('p','ไม่มีรูปในสถานะนี้'));return;}
+  for(const photo of visible){
+   const card=node('article',undefined,'photoCard'),review=reviews.get(String(photo.review_id));
+   card.append(node('h2',(review?.display_name||'รีวิว')+' · '+(review?.game||'')));
+   card.append(node('p',review?.review_text||'', 'reviewCopy'));
+   const image=node('img');image.alt='รูปประกอบรีวิว รอการตรวจโดยร้าน';card.append(image);
+   const imageState=node('p','กำลังโหลดภาพ…','muted');card.append(imageState);
+   const checks=node('div',undefined,'checks');const values={};
+   for(const [key,label]of Object.entries({rights:'ตรวจสิทธิ์และความยินยอมของผู้ที่ปรากฏในภาพแล้ว',no_violence:'ไม่มีความรุนแรงหรือภาพชวนสะเทือนใจ',no_sexual:'ไม่มีภาพโป๊ เนื้อหาส่อทางเพศ สองแง่สองง่าม หรือ 18+',no_private_data:'ไม่มีรหัสผ่าน ข้อมูลบัญชี หรือข้อมูลส่วนตัวที่ไม่ควรเผยแพร่'})){
+    const row=node('label'),input=node('input');input.type='checkbox';values[key]=input;row.append(input,node('span',label));checks.append(row);
+   }
+   card.append(checks);const note=node('textarea');note.placeholder='เหตุผลหรือบันทึกของร้าน';note.maxLength=500;note.setAttribute('aria-label','บันทึกการตรวจรูป');card.append(note);
+   const actions=node('div',undefined,'actions'),approve=node('button','อนุมัติรูป','approve'),reject=node('button','ปฏิเสธ / ซ่อนรูป','reject');approve.disabled=true;
+   actions.append(approve,reject);card.append(actions);queue.append(card);let viewed=false,busy=false;
+   const update=()=>approve.disabled=busy||!viewed||!Object.values(values).every(e=>e.checked);
+   Object.values(values).forEach(e=>e.addEventListener('change',update));
+   async function decide(state){
+    if(busy)return;if(state==='approved'&&(!viewed||!Object.values(values).every(e=>e.checked)))return;
+    busy=true;approve.disabled=true;reject.disabled=true;
+    try{await request('',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:photo.id,state,checklist:Object.fromEntries(Object.entries(values).map(([key,e])=>[key,e.checked])),note:note.value})});say(state==='approved'?'อนุมัติแล้ว รูปจะแสดงบนรีวิวเมื่อโหลดหน้าใหม่':'ซ่อนรูปแล้ว');await loadQueue();}
+    catch(error){say(error.message);busy=false;reject.disabled=false;update();}
+   }
+   approve.addEventListener('click',()=>decide('approved'));reject.addEventListener('click',()=>decide('rejected'));
+   request('?image='+encodeURIComponent(photo.id)).then(r=>r.blob()).then(blob=>{
+    if(current!==generation)return;const url=URL.createObjectURL(blob);imageUrls.push(url);
+    image.onload=()=>{viewed=true;imageState.textContent='ภาพที่ร้านกำลังตรวจ';update();};image.onerror=()=>{imageState.textContent='เปิดภาพไม่ได้ กรุณาโหลดคิวใหม่';};image.src=url;
+   }).catch(error=>{if(current===generation)imageState.textContent=error.message;});
+  }
+ }
+ async function loadQueue(){
+  if(loading)return;loading=true;document.getElementById('refresh').disabled=true;
+  try{
+   const response=await request('?state='+encodeURIComponent(document.getElementById('queueState').value)),data=await response.json();
+   photos=data.photos;reviews=new Map(data.reviews.map(r=>[String(r.id),r]));pageIndex=0;
+   document.getElementById('actorEmail').textContent=data.email;document.getElementById('loginPanel').hidden=true;document.getElementById('adminPanel').hidden=false;
+   await renderQueue();
+  }catch(error){say(error.message);document.getElementById('adminPanel').hidden=true;document.getElementById('loginPanel').hidden=false;}
+  finally{loading=false;document.getElementById('refresh').disabled=false;}
+ }
+ try{if(!window.supabase)throw Error('โหลดระบบเข้าสู่ระบบไม่สำเร็จ กรุณารีเฟรช');client=window.supabase.createClient(PROJECT,PUBLIC_KEY);}
+ catch(error){say(error.message);return;}
+ document.getElementById('loginForm').addEventListener('submit',async event=>{
+  event.preventDefault();const button=document.getElementById('loginButton');button.disabled=true;
+  try{const {error}=await client.auth.signInWithOtp({email:document.getElementById('email').value.trim(),options:{emailRedirectTo:location.origin+location.pathname,shouldCreateUser:false}});if(error)throw error;say('ส่งลิงก์เข้าสู่ระบบแล้ว ตรวจอีเมลของร้านและโฟลเดอร์สแปม');}
+  catch(error){say(error.message);}finally{button.disabled=false;}
+ });
+ document.getElementById('signOut').addEventListener('click',async()=>{await client.auth.signOut();session=null;generation++;cleanImages();queue.replaceChildren();document.getElementById('adminPanel').hidden=true;document.getElementById('loginPanel').hidden=false;say('ออกจากระบบแล้ว');});
+ document.getElementById('queueState').addEventListener('change',loadQueue);document.getElementById('refresh').addEventListener('click',loadQueue);
+ document.getElementById('previous').addEventListener('click',()=>{if(pageIndex){pageIndex--;renderQueue();}});document.getElementById('next').addEventListener('click',()=>{if((pageIndex+1)*10<photos.length){pageIndex++;renderQueue();}});
+ client.auth.onAuthStateChange((event,s)=>{session=s;if(event==='SIGNED_IN'&&s)setTimeout(loadQueue,0);});
+ client.auth.getSession().then(({data})=>{session=data.session;if(session)loadQueue();});
+ window.addEventListener('pagehide',cleanImages);
+});
+</script></body></html>
