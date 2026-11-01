@@ -1,11 +1,30 @@
 <!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FLOWX — ตรวจรูปรีวิว</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#061126;color:#edf6ff;font:16px/1.65 system-ui,sans-serif}header{border-bottom:1px solid #6cdbff55;background:#07132b;padding:16px 5%;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}main{max-width:1100px;margin:25px auto;padding:0 20px}h1{font-size:24px;margin:0}h2{font-size:18px;margin:0 0 10px}button,input,select,textarea{font:inherit}button{border:1px solid #63dfff88;background:#12396a;color:#fff;border-radius:10px;padding:9px 15px;cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}input,textarea,select{background:#0d2449;color:#fff;border:1px solid #619bcd;border-radius:9px;padding:10px}input[type=email]{max-width:100%;width:350px}textarea{width:100%;min-height:65px;margin:10px 0}a{color:#8be8ff}#status{min-height:28px;color:#9aeaff}.login,.notice{border:1px solid #62dfff66;border-radius:15px;padding:20px;background:#0c2144;margin-bottom:20px}.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:20px 0}.queue{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.photoCard{border:1px solid #76dfff77;border-radius:16px;background:#0b1e40;padding:16px;min-width:0}.photoCard img{width:100%;height:270px;object-fit:contain;background:#050d20;border-radius:10px;display:block}.reviewCopy{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;color:#c0d3ee;max-height:140px;overflow:auto}.checks label{display:flex;align-items:flex-start;gap:8px;font-size:13px;margin:8px 0}.checks input{margin-top:5px;flex:none}.actions{display:flex;gap:8px}.approve{background:#0b674e}.reject{background:#73334e}.muted{color:#a9bfdd;font-size:13px}[hidden]{display:none!important}@media(max-width:650px){.queue{grid-template-columns:1fr}}
+#pinPanel{margin-top:20px}
+.ownerPinConfirmation{display:flex;align-items:flex-start;gap:9px;font-size:14px;line-height:1.7}
+.ownerPinConfirmation input{flex:none;margin-top:6px}
+.pinReviewRow{padding:16px 0;border-top:1px solid #83cfff33}
+.pinReviewRow h3{font-size:15px;margin:0 0 5px;overflow-wrap:anywhere}
+.pinReviewText{white-space:pre-wrap;overflow-wrap:anywhere;color:#c5d9f2;font-size:14px;max-height:180px;overflow:auto}
+#pinSearchForm input{max-width:100%;min-width:0}
+
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script></head><body>
 <header><h1>FLOWX · ตรวจรูปประกอบรีวิว</h1><a href="reviews.html">กลับหน้ารีวิว</a></header><main>
 <section id="loginPanel" class="login"><h2>เข้าสู่ระบบร้าน</h2><p>ใช้บัญชีอีเมลที่ได้รับสิทธิ์จากร้านเท่านั้น</p><form id="loginForm"><label for="email">อีเมลร้าน</label><br><input id="email" type="email" autocomplete="email" required><button id="loginButton">ส่งลิงก์เข้าสู่ระบบ</button></form></section>
 <div id="status" role="status" aria-live="polite"></div>
 <section id="adminPanel" hidden><p>เข้าสู่ระบบเป็น <strong id="actorEmail"></strong> <button id="signOut">ออกจากระบบ</button></p>
+<section id="pinPanel" class="notice">
+ <h2>ปักหมุดข้อความรีวิวของร้าน</h2>
+ <p class="muted">เลือกรายการที่ร้านเขียนไว้แล้ว ปักหมุดได้ครั้งละ 1 รีวิว และจะอยู่ก่อนรีวิวที่มีไลค์มากที่สุดเสมอ</p>
+ <p id="pinnedReviewSummary">กำลังตรวจข้อความปักหมุด…</p>
+ <button id="unpinReview" type="button" disabled>ยกเลิกปักหมุด</button>
+ <form id="pinSearchForm" class="toolbar"><label for="pinQuery">ค้นหาจากข้อความรีวิว</label><input id="pinQuery" type="search" maxlength="100" placeholder="พิมพ์คำจากรีวิวของร้าน"><button id="pinSearchButton">ค้นหา / โหลดใหม่</button></form>
+ <label class="ownerPinConfirmation"><input id="ownerPinConfirmed" type="checkbox"> ฉันยืนยันว่ารีวิวที่จะเลือกปักหมุดเป็นข้อความที่ร้านเขียนเอง</label>
+ <p id="pinStatus" class="muted" role="status" aria-live="polite"></p>
+ <div id="pinReviews"></div>
+</section>
+
 <div class="notice">ตรวจรูปทุกครั้งก่อนอนุมัติ: ผู้ส่งมีสิทธิ์เผยแพร่และได้รับความยินยอม ไม่มีความรุนแรง ไม่มีภาพโป๊ เนื้อหาส่อทางเพศหรือ 18+ และไม่มีข้อมูลส่วนตัวที่ไม่ควรเปิดเผย หากตรวจสอบไม่ได้ ให้ปฏิเสธหรือคงสถานะรอตรวจไว้</div>
 <div class="toolbar"><label for="queueState">สถานะ</label><select id="queueState"><option value="pending">รอตรวจ</option><option value="approved">อนุมัติแล้ว</option><option value="rejected">ปฏิเสธแล้ว</option></select><button id="refresh">โหลดคิวใหม่</button><span id="count" class="muted"></span></div>
 <div id="queue" class="queue"></div><div class="toolbar"><button id="previous">ก่อนหน้า</button><span id="pageNumber"></span><button id="next">ถัดไป</button></div>
@@ -18,12 +37,54 @@ document.addEventListener('DOMContentLoaded',()=>{
  const say=message=>status.textContent=message;
  const cleanImages=()=>{imageUrls.forEach(URL.revokeObjectURL);imageUrls=[];};
  const node=(tag,text,className)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(className)e.className=className;return e;};
- async function request(path='',options={}){
+ async function request(path='',options={},requestRoot=ROOT){
   const {data}=await client.auth.getSession();session=data.session;
   if(!session)throw Error('กรุณาเข้าสู่ระบบร้าน');
-  const response=await fetch(ROOT+path,{...options,headers:{apikey:PUBLIC_KEY,Authorization:'Bearer '+session.access_token,...options.headers},signal:AbortSignal.timeout(20000)});
+  const response=await fetch(requestRoot+path,{...options,headers:{apikey:PUBLIC_KEY,Authorization:'Bearer '+session.access_token,...options.headers},signal:AbortSignal.timeout(20000)});
   if(!response.ok){let message='ดำเนินการไม่สำเร็จ';try{message=(await response.json()).error||message;}catch{}throw Error(message);}return response;
  }
+/* This section uses the same authenticated shop session as photo moderation. */
+let pinRows=[],pinId=null,pinsLoading=false,pinsWriting=false;
+const pinSay=message=>document.getElementById('pinStatus').textContent=message;
+function renderPinReviews(){
+ const target=document.getElementById('pinReviews');target.replaceChildren();
+ document.getElementById('unpinReview').disabled=!pinId||pinsWriting;
+ document.getElementById('pinnedReviewSummary').textContent=pinId?'มีรีวิวปักหมุดอยู่ 1 รีวิว':'ยังไม่มีรีวิวปักหมุด';
+ if(!pinRows.length){target.append(node('p','ไม่พบข้อความรีวิว ลองค้นหาคำจากรีวิวของร้าน'));return;}
+ for(const review of pinRows){
+  const row=node('article',undefined,'pinReviewRow');
+  row.append(node('h3',(String(review.id)===pinId?'📌 ':'')+review.display_name+' · '+review.game));
+  row.append(node('p',review.review_text,'pinReviewText'));
+  const button=node('button',String(review.id)===pinId?'ปักหมุดอยู่':'ปักหมุดรีวิวนี้','pinReviewAction');
+  button.type='button';button.disabled=pinsWriting||String(review.id)===pinId||!document.getElementById('ownerPinConfirmed').checked;
+  button.addEventListener('click',()=>writePin(String(review.id)));row.append(button);target.append(row);
+ }
+}
+async function loadPinReviews(){
+ if(pinsLoading||pinsWriting)return;pinsLoading=true;document.getElementById('pinSearchButton').disabled=true;
+ try{
+  const query=document.getElementById('pinQuery').value.trim();
+  const response=await request('?action=admin&query='+encodeURIComponent(query),{},PROJECT+'/functions/v1/review-reactions');
+  const data=await response.json();if(!Array.isArray(data.reviews))throw Error('ข้อมูลรีวิวไม่ครบ');
+  pinRows=data.reviews;pinId=typeof data.pinned_review_id==='string'?data.pinned_review_id:null;
+  renderPinReviews();pinSay('แสดงสูงสุด 50 รีวิวล่าสุด ค้นหาคำจากข้อความเพื่อหารีวิวของร้าน');
+ }catch(error){pinSay(error.message+' · ตรวจว่าติดตั้งระบบไลค์และปักหมุดแล้ว');}
+ finally{pinsLoading=false;document.getElementById('pinSearchButton').disabled=false;}
+}
+async function writePin(id){
+ if(pinsWriting||id&&!document.getElementById('ownerPinConfirmed').checked)return;
+ pinsWriting=true;renderPinReviews();
+ try{
+  const response=await request('',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'pin',review_id:id,confirm_owner:id!==null&&document.getElementById('ownerPinConfirmed').checked})},PROJECT+'/functions/v1/review-reactions');
+  const data=await response.json();pinId=data.pinned_review_id||null;renderPinReviews();
+  pinSay(id?'ปักหมุดแล้ว รีวิวนี้จะอยู่บนสุดเมื่อโหลดหน้ารีวิวใหม่':'ยกเลิกปักหมุดแล้ว');
+ }catch(error){pinSay(error.message);}
+ finally{pinsWriting=false;renderPinReviews();}
+}
+document.getElementById('pinSearchForm').addEventListener('submit',event=>{event.preventDefault();loadPinReviews();});
+document.getElementById('ownerPinConfirmed').addEventListener('change',renderPinReviews);
+document.getElementById('unpinReview').addEventListener('click',()=>writePin(null));
+
  async function renderQueue(){
   const current=++generation;cleanImages();queue.replaceChildren();
   const start=pageIndex*10,visible=photos.slice(start,start+10);
@@ -66,6 +127,7 @@ document.addEventListener('DOMContentLoaded',()=>{
    photos=data.photos;reviews=new Map(data.reviews.map(r=>[String(r.id),r]));pageIndex=0;
    document.getElementById('actorEmail').textContent=data.email;document.getElementById('loginPanel').hidden=true;document.getElementById('adminPanel').hidden=false;
    await renderQueue();
+   void loadPinReviews();
   }catch(error){say(error.message);document.getElementById('adminPanel').hidden=true;document.getElementById('loginPanel').hidden=false;}
   finally{loading=false;document.getElementById('refresh').disabled=false;}
  }
@@ -76,7 +138,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   try{const {error}=await client.auth.signInWithOtp({email:document.getElementById('email').value.trim(),options:{emailRedirectTo:location.origin+location.pathname,shouldCreateUser:false}});if(error)throw error;say('ส่งลิงก์เข้าสู่ระบบแล้ว ตรวจอีเมลของร้านและโฟลเดอร์สแปม');}
   catch(error){say(error.message);}finally{button.disabled=false;}
  });
- document.getElementById('signOut').addEventListener('click',async()=>{await client.auth.signOut();session=null;generation++;cleanImages();queue.replaceChildren();document.getElementById('adminPanel').hidden=true;document.getElementById('loginPanel').hidden=false;say('ออกจากระบบแล้ว');});
+ document.getElementById('signOut').addEventListener('click',async()=>{await client.auth.signOut();session=null;generation++;cleanImages();queue.replaceChildren();pinRows=[];pinId=null;document.getElementById("pinReviews").replaceChildren();document.getElementById("ownerPinConfirmed").checked=false;document.getElementById('adminPanel').hidden=true;document.getElementById('loginPanel').hidden=false;say('ออกจากระบบแล้ว');});
  document.getElementById('queueState').addEventListener('change',loadQueue);document.getElementById('refresh').addEventListener('click',loadQueue);
  document.getElementById('previous').addEventListener('click',()=>{if(pageIndex){pageIndex--;renderQueue();}});document.getElementById('next').addEventListener('click',()=>{if((pageIndex+1)*10<photos.length){pageIndex++;renderQueue();}});
  client.auth.onAuthStateChange((event,s)=>{session=s;if(event==='SIGNED_IN'&&s)setTimeout(loadQueue,0);});
