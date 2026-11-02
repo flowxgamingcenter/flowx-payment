@@ -1395,6 +1395,13 @@ background-size: cover, cover, cover, 100% auto !important;
 .reactionStatus{color:#bad8f2;font-size:12px;line-height:1.7;margin:0 0 15px;min-height:21px}
 @media(pointer:coarse){.reviewLikeButton{min-height:44px;min-width:72px}}
 
+/* Scoped player: no floating controls covering the review form or navigation. */
+.flowxMusic{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,480px);gap:22px;align-items:center;margin:24px 0;padding:18px;border:1px solid #70ddff77;border-radius:18px;background:linear-gradient(125deg,#0b2145ed,#261748d9);box-shadow:0 0 20px #24caff14;color:#eaf5ff}
+.flowxMusicInfo{min-width:0}.flowxMusicInfo>small{font-size:11px;letter-spacing:2px;color:#74e1ff}.flowxMusicInfo h2{font-size:19px;line-height:1.5;margin:8px 0}.flowxMusicInfo p{font-size:13px;line-height:1.7;margin:8px 0;color:#c2d5eb}.flowxMusicInfo>a{display:inline-block;margin-top:12px;color:#9cecff;font-size:12px}
+.flowxMusicControls{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.flowxMusicControls button{font:inherit;font-size:13px;border:1px solid #ff8fd0;border-radius:999px;background:#ff8bd0;color:#0b1732;padding:8px 16px;cursor:pointer;min-height:42px}.flowxMusicControls button:disabled{opacity:.6;cursor:wait}.flowxMusicControls button:focus-visible,.flowxMusicControls input:focus-visible{outline:2px solid #fff;outline-offset:4px}.flowxMusicControls label{font-size:12px}.flowxMusicControls input{width:110px;min-height:36px;accent-color:#79dfff}
+.flowxMusicVideo{width:100%;min-width:200px;min-height:200px;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#050b18}.flowxMusicVideo iframe{display:block;width:100%;height:100%;min-height:200px;border:0}
+@media(max-width:720px){.flowxMusic{grid-template-columns:minmax(0,1fr);gap:14px;padding:14px}.flowxMusicVideo{max-width:480px;justify-self:center}.flowxMusicInfo h2{font-size:17px}}
+
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <script src="flowx-chibi-data.js?v=edge-2" defer></script>
@@ -1432,6 +1439,21 @@ background-size: cover, cover, cover, 100% auto !important;
 
 
 <main class="container">
+<section class="flowxMusic" aria-labelledby="flowxMusicTitle">
+ <div class="flowxMusicInfo">
+  <small>FLOWX · MUSIC</small>
+  <h2 id="flowxMusicTitle">เพลงคลอระหว่างอ่านรีวิว 🎵</h2>
+  <p id="flowxMusicStatus" role="status" aria-live="polite">กำลังเตรียมเพลง…</p>
+  <div class="flowxMusicControls">
+   <button id="flowxMusicToggle" type="button" disabled>เปิดเพลง ▶</button>
+   <label for="flowxMusicVolume">เสียง <output id="flowxMusicLevel" for="flowxMusicVolume">30%</output></label>
+   <input id="flowxMusicVolume" type="range" min="0" max="100" value="30" step="1" aria-label="ระดับเสียงเพลง">
+  </div>
+  <a href="https://www.youtube.com/watch?v=B_FJMN9GFQU" target="_blank" rel="noopener noreferrer">ฟังบน YouTube ↗</a>
+ </div>
+ <div class="flowxMusicVideo"><iframe id="flowxMusicPlayer" title="เพลงคลอหน้าเว็บ FLOWX จาก YouTube" width="480" height="270" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+</section>
+
 
 <section class="stats">
 
@@ -2446,6 +2468,60 @@ applySketchFrames();
 loadReviews();
 initializeLine();
 void initializeReviewEnhancements();
+
+</script>
+<script>
+// Isolated from LINE, reviews, moderation, likes and pinning.
+(()=>{
+ const videoId='B_FJMN9GFQU',button=document.getElementById('flowxMusicToggle'),slider=document.getElementById('flowxMusicVolume'),level=document.getElementById('flowxMusicLevel'),status=document.getElementById('flowxMusicStatus'),iframe=document.getElementById('flowxMusicPlayer');
+ if(!button||!iframe)return;
+ const read=key=>{try{return localStorage.getItem(key);}catch{return null;}};
+ const save=(key,value)=>{try{localStorage.setItem(key,value);}catch{}};
+ const savedVolume=read('flowx.music.volume');
+ let volume=savedVolume!==null&&Number.isFinite(Number(savedVolume))?Math.max(0,Math.min(100,Number(savedVolume))):30;
+ let wantsPlay=read('flowx.music.enabled')!=='false',ready=false,playing=false,player=null,failed=false,watchdog;
+ slider.value=String(volume);level.textContent=volume+'%';
+ const message=text=>{status.textContent=text;};
+ const blocked=()=>{if(!failed&&!playing){button.disabled=false;button.textContent='เปิดเพลง ▶';message('แตะเปิดเพลงเพื่อฟังระหว่างอ่านรีวิว');}};
+ const fail=()=>{failed=true;clearTimeout(watchdog);button.disabled=true;button.textContent='เปิดใน YouTube ↗';message('เครื่องเล่นเพลงยังไม่พร้อม ใช้ลิงก์ฟังบน YouTube ด้านล่างได้จ้า');};
+ const watchPlayback=()=>{clearTimeout(watchdog);watchdog=setTimeout(blocked,6000);};
+ const src=new URL('https://www.youtube-nocookie.com/embed/'+videoId);
+ for(const [key,value]of Object.entries({enablejsapi:'1',autoplay:'0',playsinline:'1',controls:'1',loop:'1',playlist:videoId,rel:'0'}))src.searchParams.set(key,value);
+ if(location.protocol==='https:'||location.protocol==='http:')src.searchParams.set('origin',location.origin);
+ iframe.src=src.href;
+ const create=()=>{
+  if(player||!window.YT?.Player)return;
+  try{player=new window.YT.Player('flowxMusicPlayer',{events:{
+   onReady:event=>{
+    clearTimeout(loadTimeout);ready=true;failed=false;button.disabled=false;
+    event.target.setVolume(volume);
+    if(wantsPlay){message('กำลังลองเปิดเพลงเบา ๆ…');event.target.playVideo();watchPlayback();}
+    else message('พักเพลงอยู่ กดเปิดเพลงได้ทุกเมื่อ');
+   },
+   onAutoplayBlocked:blocked,
+   onStateChange:event=>{
+    playing=event.data===1;
+    if(playing){clearTimeout(watchdog);button.textContent='พักเพลง ❚❚';message('กำลังเล่นเพลง'+(volume===0?' · ปิดเสียง':''));}
+    else if(event.data===2){clearTimeout(watchdog);button.textContent='เปิดเพลง ▶';message('พักเพลงอยู่');}
+    else if(event.data===0&&wantsPlay){event.target.playVideo();}
+   },
+   onError:fail
+  }});}catch{fail();}
+ };
+ button.addEventListener('click',()=>{
+  if(!ready||failed)return;
+  if(playing){wantsPlay=false;player.pauseVideo();save('flowx.music.enabled','false');}
+  else {wantsPlay=true;save('flowx.music.enabled','true');player.setVolume(volume);player.unMute();player.playVideo();watchPlayback();}
+ });
+ slider.addEventListener('input',()=>{volume=Number(slider.value);level.textContent=volume+'%';save('flowx.music.volume',String(volume));if(ready&&!failed)player.setVolume(volume);});
+ // Leaving the page/tab pauses playback. Returning never overrides a pause.
+ document.addEventListener('visibilitychange',()=>{if(document.hidden&&ready&&playing)player.pauseVideo();});
+ const previous=window.onYouTubeIframeAPIReady;
+ window.onYouTubeIframeAPIReady=()=>{try{if(typeof previous==='function')previous();}finally{create();}};
+ const loadTimeout=setTimeout(()=>{if(!ready)fail();},15000);
+ if(window.YT?.Player)create();
+ else {const script=document.createElement('script');script.src='https://www.youtube.com/iframe_api';script.async=true;script.onerror=fail;document.head.append(script);}
+})();
 
 </script>
 </body>
