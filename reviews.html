@@ -2485,6 +2485,25 @@ void initializeReviewEnhancements();
  const blocked=()=>{if(!failed&&!playing){button.disabled=false;button.textContent='เปิดเพลง ▶';message('แตะเปิดเพลงเพื่อฟังระหว่างอ่านรีวิว');}};
  const fail=()=>{failed=true;clearTimeout(watchdog);button.disabled=true;button.textContent='เปิดใน YouTube ↗';message('เครื่องเล่นเพลงยังไม่พร้อม ใช้ลิงก์ฟังบน YouTube ด้านล่างได้จ้า');};
  const watchPlayback=()=>{clearTimeout(watchdog);watchdog=setTimeout(blocked,6000);};
+ let interacted=false;
+ const attemptedEvents=new Set(),gestureEvents=['wheel','touchmove','scroll','pointerdown','pointerup','touchend','click','keydown'];
+ const stopGestures=()=>{for(const type of gestureEvents)window.removeEventListener(type,onGesture);};
+ const startFromGesture=()=>{
+  if(!ready||failed||playing||!wantsPlay||document.hidden)return;
+  player.setVolume(volume);player.unMute();player.playVideo();watchPlayback();
+ };
+ function onGesture(event){
+  if(!event.isTrusted||!wantsPlay||playing||failed||event.target?.closest?.('.flowxMusic')||attemptedEvents.has(event.type))return;
+  if(event.type==='keydown'&&(event.key==='Escape'||event.ctrlKey||event.metaKey||event.altKey))return;
+  if(event.type==='pointerdown'&&event.pointerType!=='mouse')return;
+  if(event.type==='scroll'&&window.scrollY<=0)return;
+  interacted=true;
+  // An early gesture is remembered; try once the iframe is actually ready.
+  // Scrolling is not user activation in every browser, so later tap/click events
+  // are independent retries. Never prevent scrolling or intercept form clicks.
+  if(ready){attemptedEvents.add(event.type);startFromGesture();}
+ }
+ for(const type of gestureEvents)window.addEventListener(type,onGesture,{passive:true});
  const src=new URL('https://www.youtube-nocookie.com/embed/'+videoId);
  for(const [key,value]of Object.entries({enablejsapi:'1',autoplay:'0',playsinline:'1',controls:'1',loop:'1',playlist:videoId,rel:'0'}))src.searchParams.set(key,value);
  if(location.protocol==='https:'||location.protocol==='http:')src.searchParams.set('origin',location.origin);
@@ -2495,13 +2514,13 @@ void initializeReviewEnhancements();
    onReady:event=>{
     clearTimeout(loadTimeout);ready=true;failed=false;button.disabled=false;
     event.target.setVolume(volume);
-    if(wantsPlay){message('กำลังลองเปิดเพลงเบา ๆ…');event.target.playVideo();watchPlayback();}
+    if(wantsPlay){message('เลื่อนหน้าจอหรือแตะเพื่อเริ่มเพลง');if(interacted)startFromGesture();}
     else message('พักเพลงอยู่ กดเปิดเพลงได้ทุกเมื่อ');
    },
    onAutoplayBlocked:blocked,
    onStateChange:event=>{
     playing=event.data===1;
-    if(playing){clearTimeout(watchdog);button.textContent='พักเพลง ❚❚';message('กำลังเล่นเพลง'+(volume===0?' · ปิดเสียง':''));}
+    if(playing){stopGestures();clearTimeout(watchdog);button.textContent='พักเพลง ❚❚';message('กำลังเล่นเพลง'+(volume===0?' · ปิดเสียง':''));}
     else if(event.data===2){clearTimeout(watchdog);button.textContent='เปิดเพลง ▶';message('พักเพลงอยู่');}
     else if(event.data===0&&wantsPlay){event.target.playVideo();}
    },
@@ -2510,7 +2529,7 @@ void initializeReviewEnhancements();
  };
  button.addEventListener('click',()=>{
   if(!ready||failed)return;
-  if(playing){wantsPlay=false;player.pauseVideo();save('flowx.music.enabled','false');}
+  if(playing){wantsPlay=false;stopGestures();player.pauseVideo();save('flowx.music.enabled','false');}
   else {wantsPlay=true;save('flowx.music.enabled','true');player.setVolume(volume);player.unMute();player.playVideo();watchPlayback();}
  });
  slider.addEventListener('input',()=>{volume=Number(slider.value);level.textContent=volume+'%';save('flowx.music.volume',String(volume));if(ready&&!failed)player.setVolume(volume);});
