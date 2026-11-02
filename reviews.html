@@ -1367,7 +1367,7 @@ background-size: cover, cover, cover, 100% auto !important;
 .reviewBanner::before {display:none}
 .review:has(.reviewChibi) .reviewBody {padding-top:24px;border-top:1px solid #6cdfff66}
 .review:has(.reviewChibi) .reviewTop {padding-right:78px;min-height:48px;flex-wrap:wrap}
-.reviewChibi {position:absolute!important;right:8px;width:72px;overflow:hidden;z-index:3!important;pointer-events:none;filter:drop-shadow(0 3px 3px #0006)}
+.reviewChibi {position:absolute!important;right:8px;object-fit:contain;z-index:3!important;pointer-events:none;filter:drop-shadow(0 3px 3px #0006)}
 .approvedReviewPhotos {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:12px 0 4px}
 .approvedReviewPhotos a {min-width:0;aspect-ratio:1;border-radius:8px;overflow:hidden;border:1px solid #6cdfff77;background:#0b2145}
 .approvedReviewPhotos img {width:100%;height:100%;display:block;object-fit:cover}
@@ -1397,7 +1397,7 @@ background-size: cover, cover, cover, 100% auto !important;
 
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-<script src="flowx-chibi-data.js" defer></script>
+<script src="flowx-chibi-data.js?v=edge-2" defer></script>
 </head>
 
 <body>
@@ -1735,11 +1735,12 @@ function chibiMarkup(review) {
  const variant=reviewExtras.get(String(review.id))?.variant;
  if(!Number.isInteger(variant)||variant<0||variant>=75)return '';
  const character=Math.floor(variant/5),pose=variant%5;
- const sheet=window.FLOWX_CHIBI_SHEETS?.[CHIBI_IDS[character]];
+ const sheet=window.FLOWX_CHIBI_POSES?.[CHIBI_IDS[character]]?.[pose];
  const frame=window.FLOWX_CHIBI_FRAMES?.[CHIBI_IDS[character]]?.[pose];
  if(!sheet||!frame)return '';
  const height=Math.min(96,72*frame.box[3]/frame.box[2]);
- return `<svg class="reviewChibi" data-character="${CHIBI_IDS[character]}" data-pose="${pose}" role="img" aria-label="${CHIBI_NAMES[character]} ประดับขอบรีวิว" viewBox="${frame.box.join(' ')}" preserveAspectRatio="xMidYMax meet" style="height:${height}px;top:0"><image href="${sheet}" width="${frame.source[0]}" height="${frame.source[1]}"/></svg>`;
+ const width=height*frame.box[2]/frame.box[3];
+ return `<img class="reviewChibi" data-character="${CHIBI_IDS[character]}" data-pose="${pose}" data-anchor="${frame.anchor}" src="${sheet}" alt="${CHIBI_NAMES[character]} ประดับขอบรีวิว" style="width:${width}px;height:${height}px;top:${-height*frame.anchor}px">`;
 }
 function approvedPhotosMarkup(review) {
  const photos=(reviewExtras.get(String(review.id))?.photos||[]).filter(p=>/^[0-9a-f-]{36}$/i.test(p.id)).slice(0,3);
