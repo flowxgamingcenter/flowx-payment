@@ -1395,12 +1395,10 @@ background-size: cover, cover, cover, 100% auto !important;
 .reactionStatus{color:#bad8f2;font-size:12px;line-height:1.7;margin:0 0 15px;min-height:21px}
 @media(pointer:coarse){.reviewLikeButton{min-height:44px;min-width:72px}}
 
-/* Scoped player: no floating controls covering the review form or navigation. */
-.flowxMusic{display:grid;grid-template-columns:minmax(0,1fr) 200px;gap:14px;align-items:center;margin:18px 0;padding:12px;border:1px solid #70ddff77;border-radius:14px;background:linear-gradient(125deg,#0b2145ed,#261748d9);box-shadow:0 0 20px #24caff14;color:#eaf5ff}
-.flowxMusicInfo{min-width:0}.flowxMusicInfo>small{font-size:11px;letter-spacing:2px;color:#74e1ff}.flowxMusicInfo h2{font-size:19px;line-height:1.5;margin:8px 0}.flowxMusicInfo p{font-size:13px;line-height:1.7;margin:8px 0;color:#c2d5eb}.flowxMusicInfo>a{display:inline-block;margin-top:12px;color:#9cecff;font-size:12px}
-.flowxMusicControls{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.flowxMusicControls button{font:inherit;font-size:13px;border:1px solid #ff8fd0;border-radius:999px;background:#ff8bd0;color:#0b1732;padding:8px 16px;cursor:pointer;min-height:42px}.flowxMusicControls button:disabled{opacity:.6;cursor:wait}.flowxMusicControls button:focus-visible,.flowxMusicControls input:focus-visible{outline:2px solid #fff;outline-offset:4px}.flowxMusicControls label{font-size:12px}.flowxMusicControls input{width:110px;min-height:36px;accent-color:#79dfff}
-.flowxMusicVideo{width:200px;height:200px;min-width:200px;min-height:200px;border-radius:8px;overflow:hidden;background:#050b18}.flowxMusicVideo iframe{display:block;width:200px;height:200px;border:0}
-@media(max-width:540px){.flowxMusic{grid-template-columns:minmax(0,1fr);gap:10px;padding:12px}.flowxMusicVideo{justify-self:center}.flowxMusicInfo h2{font-size:16px;margin:4px 0}}
+/* Small inline audio bar; never covers review content or the navigation. */
+.flowxMusic{margin:16px 0;padding:10px 14px;border:1px solid #70ddff55;border-radius:14px;background:#0b1b36d9;color:#eaf5ff}
+.flowxMusicControls{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.flowxMusicTrack{font-size:13px;font-weight:600;color:#a8ecff}.flowxMusicControls button{font:inherit;font-size:12px;border:1px solid #ff8fd0;border-radius:999px;background:#ff8bd0;color:#0b1732;padding:7px 13px;cursor:pointer;min-height:40px}.flowxMusicControls button:focus-visible,.flowxMusicControls input:focus-visible{outline:2px solid #fff;outline-offset:4px}.flowxMusicControls label{font-size:12px}.flowxMusicControls input{width:100px;min-height:36px;accent-color:#79dfff}.flowxMusicControls #flowxMusicStatus{font-size:11px;color:#b9cde9;line-height:1.6}.flowxMusic audio{display:none}
+@media(max-width:480px){.flowxMusic{padding:8px 10px}.flowxMusicControls{gap:8px}.flowxMusicTrack{flex-basis:100%}}
 
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -1439,19 +1437,15 @@ background-size: cover, cover, cover, 100% auto !important;
 
 
 <main class="container">
-<section class="flowxMusic" aria-labelledby="flowxMusicTitle">
- <div class="flowxMusicInfo">
-  <small>FLOWX · MUSIC</small>
-  <h2 id="flowxMusicTitle">เพลงคลอ 🎵</h2>
-  <p id="flowxMusicStatus" role="status" aria-live="polite">กำลังเตรียมเพลง…</p>
-  <div class="flowxMusicControls">
-   <button id="flowxMusicToggle" type="button" disabled>เปิดเพลง ▶</button>
-   <label for="flowxMusicVolume">เสียง <output id="flowxMusicLevel" for="flowxMusicVolume">30%</output></label>
-   <input id="flowxMusicVolume" type="range" min="0" max="100" value="30" step="1" aria-label="ระดับเสียงเพลง">
-  </div>
-  <a href="https://www.youtube.com/watch?v=B_FJMN9GFQU" target="_blank" rel="noopener noreferrer">ฟังบน YouTube ↗</a>
+<section class="flowxMusic" aria-label="เพลงคลอหน้าเว็บ">
+ <div class="flowxMusicControls">
+  <span class="flowxMusicTrack">🎵 Nothing on You</span>
+  <button id="flowxMusicToggle" type="button" aria-pressed="false">เปิดเพลง ▶</button>
+  <label for="flowxMusicVolume">เสียง <output id="flowxMusicLevel" for="flowxMusicVolume">30%</output></label>
+  <input id="flowxMusicVolume" type="range" min="0" max="100" value="30" step="1" aria-label="ระดับเสียงเพลง">
+  <span id="flowxMusicStatus" role="status" aria-live="polite">เลื่อนหรือแตะเพื่อเริ่มเพลง</span>
  </div>
- <div class="flowxMusicVideo"><iframe id="flowxMusicPlayer" title="เพลงคลอหน้าเว็บ FLOWX จาก YouTube" width="200" height="200" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+ <audio id="flowxMusicAudio" src="./Nothing%20on%20You.mp3" preload="none" loop></audio>
 </section>
 
 
@@ -2471,75 +2465,56 @@ void initializeReviewEnhancements();
 
 </script>
 <script>
-// Isolated from LINE, reviews, moderation, likes and pinning.
+// Local MP3 playback, independent from LINE and all review services.
 (()=>{
- const videoId='B_FJMN9GFQU',button=document.getElementById('flowxMusicToggle'),slider=document.getElementById('flowxMusicVolume'),level=document.getElementById('flowxMusicLevel'),status=document.getElementById('flowxMusicStatus'),iframe=document.getElementById('flowxMusicPlayer');
- if(!button||!iframe)return;
+ const audio=document.getElementById('flowxMusicAudio'),button=document.getElementById('flowxMusicToggle'),slider=document.getElementById('flowxMusicVolume'),level=document.getElementById('flowxMusicLevel'),status=document.getElementById('flowxMusicStatus');
+ if(!audio||!button)return;
  const read=key=>{try{return localStorage.getItem(key);}catch{return null;}};
  const save=(key,value)=>{try{localStorage.setItem(key,value);}catch{}};
  const savedVolume=read('flowx.music.volume');
  let volume=savedVolume!==null&&Number.isFinite(Number(savedVolume))?Math.max(0,Math.min(100,Number(savedVolume))):30;
- let wantsPlay=read('flowx.music.enabled')!=='false',ready=false,playing=false,player=null,failed=false,watchdog;
- slider.value=String(volume);level.textContent=volume+'%';
+ let wantsPlay=read('flowx.music.enabled')!=='false',pending=false,failed=false,request=0;
+ audio.volume=volume/100;slider.value=String(volume);level.textContent=volume+'%';
  const message=text=>{status.textContent=text;};
- const blocked=()=>{if(!failed&&!playing){button.disabled=false;button.textContent='เปิดเพลง ▶';message('แตะเปิดเพลงเพื่อฟังระหว่างอ่านรีวิว');}};
- const fail=()=>{failed=true;clearTimeout(watchdog);button.disabled=true;button.textContent='เปิดใน YouTube ↗';message('เครื่องเล่นเพลงยังไม่พร้อม ใช้ลิงก์ฟังบน YouTube ด้านล่างได้จ้า');};
- const watchPlayback=()=>{clearTimeout(watchdog);watchdog=setTimeout(blocked,6000);};
- let interacted=false;
- const attemptedEvents=new Set(),gestureEvents=['wheel','touchmove','scroll','pointerdown','pointerup','touchend','click','keydown'];
- const stopGestures=()=>{for(const type of gestureEvents)window.removeEventListener(type,onGesture);};
- const startFromGesture=()=>{
-  if(!ready||failed||playing||!wantsPlay||document.hidden)return;
-  player.setVolume(volume);player.unMute();player.playVideo();watchPlayback();
- };
+ message(wantsPlay?'เลื่อนหรือแตะเพื่อเริ่มเพลง':'พักเพลงอยู่');
+ const events=['wheel','touchmove','scroll','pointerdown','pointerup','touchend','click','keydown'],attempted=new Set();
+ const stopGestures=()=>events.forEach(type=>window.removeEventListener(type,onGesture));
+ const pause=()=>{request++;pending=false;audio.pause();button.textContent='เปิดเพลง ▶';button.setAttribute('aria-pressed','false');message('พักเพลงอยู่');};
+ async function play(){
+  if(pending||!audio.paused||document.hidden)return;
+  const current=++request;pending=true;failed=false;message('กำลังเปิดเพลง…');
+  try{
+   audio.volume=volume/100;
+   // Invoke directly within the gesture, before metadata/network has loaded.
+   await audio.play();
+   if(current!==request||!wantsPlay){audio.pause();return;}
+  }catch(error){
+   if(current!==request)return;
+   if(error.name==='NotAllowedError')message('แตะเปิดเพลงเพื่อเริ่มฟัง');
+   else if(error.name!=='AbortError'){failed=true;message('เปิดเพลงไม่ได้ ลองกดเปิดเพลงอีกครั้ง');}
+   button.textContent='เปิดเพลง ▶';button.setAttribute('aria-pressed','false');
+  }finally{if(current===request)pending=false;}
+ }
  function onGesture(event){
-  if(!event.isTrusted||!wantsPlay||playing||failed||event.target?.closest?.('.flowxMusic')||attemptedEvents.has(event.type))return;
+  if(!event.isTrusted||!wantsPlay||failed||pending||!audio.paused||event.target?.closest?.('.flowxMusic')||attempted.has(event.type))return;
   if(event.type==='keydown'&&(event.key==='Escape'||event.ctrlKey||event.metaKey||event.altKey))return;
   if(event.type==='pointerdown'&&event.pointerType!=='mouse')return;
   if(event.type==='scroll'&&window.scrollY<=0)return;
-  interacted=true;
-  // An early gesture is remembered; try once the iframe is actually ready.
-  // Scrolling is not user activation in every browser, so later tap/click events
-  // are independent retries. Never prevent scrolling or intercept form clicks.
-  if(ready){attemptedEvents.add(event.type);startFromGesture();}
+  attempted.add(event.type);void play();
  }
- for(const type of gestureEvents)window.addEventListener(type,onGesture,{passive:true});
- const src=new URL('https://www.youtube-nocookie.com/embed/'+videoId);
- for(const [key,value]of Object.entries({enablejsapi:'1',autoplay:'0',playsinline:'1',controls:'1',loop:'1',playlist:videoId,rel:'0'}))src.searchParams.set(key,value);
- if(location.protocol==='https:'||location.protocol==='http:')src.searchParams.set('origin',location.origin);
- iframe.src=src.href;
- const create=()=>{
-  if(player||!window.YT?.Player)return;
-  try{player=new window.YT.Player('flowxMusicPlayer',{events:{
-   onReady:event=>{
-    clearTimeout(loadTimeout);ready=true;failed=false;button.disabled=false;
-    event.target.setVolume(volume);
-    if(wantsPlay){message('เลื่อนหน้าจอหรือแตะเพื่อเริ่มเพลง');if(interacted)startFromGesture();}
-    else message('พักเพลงอยู่ กดเปิดเพลงได้ทุกเมื่อ');
-   },
-   onAutoplayBlocked:blocked,
-   onStateChange:event=>{
-    playing=event.data===1;
-    if(playing){stopGestures();clearTimeout(watchdog);button.textContent='พักเพลง ❚❚';message('กำลังเล่นเพลง'+(volume===0?' · ปิดเสียง':''));}
-    else if(event.data===2){clearTimeout(watchdog);button.textContent='เปิดเพลง ▶';message('พักเพลงอยู่');}
-    else if(event.data===0&&wantsPlay){event.target.playVideo();}
-   },
-   onError:fail
-  }});}catch{fail();}
- };
- button.addEventListener('click',()=>{
-  if(!ready||failed)return;
-  if(playing){wantsPlay=false;stopGestures();player.pauseVideo();save('flowx.music.enabled','false');}
-  else {wantsPlay=true;save('flowx.music.enabled','true');player.setVolume(volume);player.unMute();player.playVideo();watchPlayback();}
+ if(wantsPlay)events.forEach(type=>window.addEventListener(type,onGesture,{passive:true}));
+ audio.addEventListener('playing',()=>{
+  if(!wantsPlay){audio.pause();return;}
+  pending=false;stopGestures();button.textContent='พักเพลง ❚❚';button.setAttribute('aria-pressed','true');message('กำลังเล่นเพลง'+(volume===0?' · ปิดเสียง':''));
  });
- slider.addEventListener('input',()=>{volume=Number(slider.value);level.textContent=volume+'%';save('flowx.music.volume',String(volume));if(ready&&!failed)player.setVolume(volume);});
- // Leaving the page/tab pauses playback. Returning never overrides a pause.
- document.addEventListener('visibilitychange',()=>{if(document.hidden&&ready&&playing)player.pauseVideo();});
- const previous=window.onYouTubeIframeAPIReady;
- window.onYouTubeIframeAPIReady=()=>{try{if(typeof previous==='function')previous();}finally{create();}};
- const loadTimeout=setTimeout(()=>{if(!ready)fail();},15000);
- if(window.YT?.Player)create();
- else {const script=document.createElement('script');script.src='https://www.youtube.com/iframe_api';script.async=true;script.onerror=fail;document.head.append(script);}
+ audio.addEventListener('pause',()=>{button.textContent='เปิดเพลง ▶';button.setAttribute('aria-pressed','false');if(!failed)message('พักเพลงอยู่');});
+ audio.addEventListener('error',()=>{failed=true;pending=false;message('โหลดเพลงไม่ได้ กรุณาตรวจว่าอัปโหลดไฟล์ Nothing on You.mp3 แล้ว');button.textContent='ลองเปิดเพลงอีกครั้ง';});
+ button.addEventListener('click',()=>{
+  if(!audio.paused||pending){wantsPlay=false;save('flowx.music.enabled','false');stopGestures();pause();}
+  else {wantsPlay=true;save('flowx.music.enabled','true');if(audio.error)audio.load();void play();}
+ });
+ slider.addEventListener('input',()=>{volume=Number(slider.value);audio.volume=volume/100;level.textContent=volume+'%';save('flowx.music.volume',String(volume));});
+ document.addEventListener('visibilitychange',()=>{if(document.hidden&&(!audio.paused||pending))pause();});
 })();
 
 </script>
