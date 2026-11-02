@@ -1396,11 +1396,11 @@ background-size: cover, cover, cover, 100% auto !important;
 @media(pointer:coarse){.reviewLikeButton{min-height:44px;min-width:72px}}
 
 /* Scoped player: no floating controls covering the review form or navigation. */
-.flowxMusic{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,480px);gap:22px;align-items:center;margin:24px 0;padding:18px;border:1px solid #70ddff77;border-radius:18px;background:linear-gradient(125deg,#0b2145ed,#261748d9);box-shadow:0 0 20px #24caff14;color:#eaf5ff}
+.flowxMusic{display:grid;grid-template-columns:minmax(0,1fr) 200px;gap:14px;align-items:center;margin:18px 0;padding:12px;border:1px solid #70ddff77;border-radius:14px;background:linear-gradient(125deg,#0b2145ed,#261748d9);box-shadow:0 0 20px #24caff14;color:#eaf5ff}
 .flowxMusicInfo{min-width:0}.flowxMusicInfo>small{font-size:11px;letter-spacing:2px;color:#74e1ff}.flowxMusicInfo h2{font-size:19px;line-height:1.5;margin:8px 0}.flowxMusicInfo p{font-size:13px;line-height:1.7;margin:8px 0;color:#c2d5eb}.flowxMusicInfo>a{display:inline-block;margin-top:12px;color:#9cecff;font-size:12px}
 .flowxMusicControls{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.flowxMusicControls button{font:inherit;font-size:13px;border:1px solid #ff8fd0;border-radius:999px;background:#ff8bd0;color:#0b1732;padding:8px 16px;cursor:pointer;min-height:42px}.flowxMusicControls button:disabled{opacity:.6;cursor:wait}.flowxMusicControls button:focus-visible,.flowxMusicControls input:focus-visible{outline:2px solid #fff;outline-offset:4px}.flowxMusicControls label{font-size:12px}.flowxMusicControls input{width:110px;min-height:36px;accent-color:#79dfff}
-.flowxMusicVideo{width:100%;min-width:200px;min-height:200px;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#050b18}.flowxMusicVideo iframe{display:block;width:100%;height:100%;min-height:200px;border:0}
-@media(max-width:720px){.flowxMusic{grid-template-columns:minmax(0,1fr);gap:14px;padding:14px}.flowxMusicVideo{max-width:480px;justify-self:center}.flowxMusicInfo h2{font-size:17px}}
+.flowxMusicVideo{width:200px;height:200px;min-width:200px;min-height:200px;border-radius:8px;overflow:hidden;background:#050b18}.flowxMusicVideo iframe{display:block;width:200px;height:200px;border:0}
+@media(max-width:540px){.flowxMusic{grid-template-columns:minmax(0,1fr);gap:10px;padding:12px}.flowxMusicVideo{justify-self:center}.flowxMusicInfo h2{font-size:16px;margin:4px 0}}
 
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -1442,7 +1442,7 @@ background-size: cover, cover, cover, 100% auto !important;
 <section class="flowxMusic" aria-labelledby="flowxMusicTitle">
  <div class="flowxMusicInfo">
   <small>FLOWX · MUSIC</small>
-  <h2 id="flowxMusicTitle">เพลงคลอระหว่างอ่านรีวิว 🎵</h2>
+  <h2 id="flowxMusicTitle">เพลงคลอ 🎵</h2>
   <p id="flowxMusicStatus" role="status" aria-live="polite">กำลังเตรียมเพลง…</p>
   <div class="flowxMusicControls">
    <button id="flowxMusicToggle" type="button" disabled>เปิดเพลง ▶</button>
@@ -1451,7 +1451,7 @@ background-size: cover, cover, cover, 100% auto !important;
   </div>
   <a href="https://www.youtube.com/watch?v=B_FJMN9GFQU" target="_blank" rel="noopener noreferrer">ฟังบน YouTube ↗</a>
  </div>
- <div class="flowxMusicVideo"><iframe id="flowxMusicPlayer" title="เพลงคลอหน้าเว็บ FLOWX จาก YouTube" width="480" height="270" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+ <div class="flowxMusicVideo"><iframe id="flowxMusicPlayer" title="เพลงคลอหน้าเว็บ FLOWX จาก YouTube" width="200" height="200" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
 </section>
 
 
